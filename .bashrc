@@ -21,10 +21,13 @@ alias sudo="sudo -v; sudo "
 alias vim="nvim"
 
 alias l="ls -1h --color=auto --file-type --group-directories-first"
+alias l.="ls -1h --color=auto --file-type --group-directories-first -d .*"
 alias ll="ls -1Ah --color=auto --file-type --group-directories-first"
 alias la="ls -lAh --color=auto --file-type --group-directories-first"
+alias diffc="diff --color=auto"
+alias ipa="ip -color=auto address show"
 
-alias smuc="sed -E '/^(#| |$)/d;s/^(sudo )?([^[:space:]]*).*$/\2/' $HISTFILE | \
+alias smuc="sed -E '/^(#| |$)/d;s/^(sudo )?([^[:space:]]*).*$/\2/' \$HISTFILE | \
     sort | \
     uniq -c | \
     sort -nr | \
@@ -35,8 +38,9 @@ alias clc="fc -ln -1 | \
     tr -d '\n' | \
     wl-copy"
 
+# https://wiki.archlinux.org/title/Dotfiles#Tracking_dotfiles_directly_with_Git
 alias dots="git \
-    --git-dir=\$HOME/.local/share/dotfiles/ \
+    --git-dir=\$HOME/.local/share/dots/ \
     --work-tree=\$HOME"
 if [ -f /usr/share/bash-completion/completions/git ]; then
     source /usr/share/bash-completion/completions/git
@@ -57,7 +61,7 @@ if [ -f /usr/share/fzf/completion.bash ]; then
     source /usr/share/fzf/completion.bash
 fi
 
-if [ -f /run/.containerenv ]; then
+if [ -f /run/.containerenv ] && [ -f /run/.toolboxenv ]; then
     TOOLBOX_NAME="$(sed -En 's/^name="(.+)"/\1/p' /run/.containerenv)"
     PS1="\u@\h[${TOOLBOX_NAME}] \[\e[01;35m\]\w\[\e[00m\] \$? \$ "
 else
