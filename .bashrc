@@ -38,15 +38,16 @@ alias smuc="sed -E '/^(#| |$)/d;s/^(sudo )?([^[:space:]]*).*$/\2/' \$HISTFILE | 
     sort -nr | \
     head"
 
+
 case "$XDG_SESSION_TYPE" in
     "wayland")
-        command -v wl-copy &> /dev/null && alias copy="wl-copy"
+        command -v wl-copy &>/dev/null && alias copy="wl-copy"
         ;;
     "x11")
-        command -v xclip &> /dev/null && alias copy="xclip -selection clipboard"
+        command -v xclip &>/dev/null && alias copy="xclip -selection clipboard"
         ;;
     *)
-        command -v termux-clipboard-set &> /dev/null && alias copy="termux-clipboard-set"
+        command -v termux-clipboard-set &>/dev/null && alias copy="termux-clipboard-set"
         ;;
 esac
 
