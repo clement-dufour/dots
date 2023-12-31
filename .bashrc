@@ -18,9 +18,11 @@ else
     SYSNAME="$(sed -En '/^NAME=/s/^NAME="(.+)"$/\1/p' /etc/*release)" 2>/dev/null || SYSNAME=""
 fi
 
+
 shopt -s autocd
 shopt -s cdspell
 set -o noclobber
+
 
 alias sudo="sudo -v; sudo "
 alias vim="nvim"
