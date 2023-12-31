@@ -12,10 +12,10 @@ fi
 export PATH
 
 # User specific aliases and functions
-if [ "$OS_TYPE" = "linux-android" ] && [ -z "$TERMUX_VERSION" ]; then
+if [ "$OSTYPE" = "linux-android" ] && [ -n "$TERMUX_VERSION" ]; then
     SYSNAME="Termux"
 else
-    SYSNAME="$(sed -En '/^NAME=/s/^NAME="(.+)"$/\1/p' /etc/*release)" || SYSNAME=""
+    SYSNAME="$(sed -En '/^NAME=/s/^NAME="(.+)"$/\1/p' /etc/*release)" 2>/dev/null || SYSNAME=""
 fi
 
 shopt -s autocd
