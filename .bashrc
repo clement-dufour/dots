@@ -20,7 +20,6 @@ fi
 
 shopt -s autocd
 shopt -s cdspell
-
 set -o noclobber
 
 alias sudo="sudo -v; sudo "
@@ -39,11 +38,26 @@ alias smuc="sed -E '/^(#| |$)/d;s/^(sudo )?([^[:space:]]*).*$/\2/' \$HISTFILE | 
     sort -nr | \
     head"
 
-alias clc="fc -ln -1 | \
-    sed -E 's/^[[:space:]]*//' | \
-    tr -d '\n' | \
-    wl-copy"
+case "$XDG_SESSION_TYPE" in
+    "wayland")
+        command -v wl-copy &> /dev/null && alias copy="wl-copy"
+        ;;
+    "x11")
+        command -v xclip &> /dev/null && alias copy="xclip -selection clipboard"
+        ;;
+    *)
+        command -v termux-clipboard-set &> /dev/null && alias copy="termux-clipboard-set"
+        ;;
+esac
 
+alias copy &>/dev/null &&
+    alias clc="fc -ln -1 | \
+        sed -E 's/^[[:space:]]*//;s/[[:space:]]*$//' | \
+        tr -d '\n' | \
+        copy"
+
+
+# Dotfiles management
 # https://wiki.archlinux.org/title/Dotfiles#Tracking_dotfiles_directly_with_Git
 alias dots="git \
     --git-dir=\$HOME/.local/share/dots.git/ \
@@ -65,6 +79,8 @@ case "$SYSNAME" in
 esac
 
 
+# fzf
+# https://wiki.archlinux.org/title/Fzf#Bash
 case "$SYSNAME" in
     "Termux")
         if [ -f $PREFIX/share/fzf/key-bindings.bash ]; then
@@ -88,6 +104,7 @@ case "$SYSNAME" in
         fi
         ;;
 esac
+
 
 if [ -f /run/.containerenv ] && [ -f /run/.toolboxenv ]; then
     TOOLBOX_NAME="$(sed -En 's/^name="(.+)"/\1/p' /run/.containerenv)"
