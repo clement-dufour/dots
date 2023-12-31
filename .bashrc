@@ -51,8 +51,8 @@ alias dots="git \
 
 case "$SYSNAME" in
     "Termux")
-        if [ -f $PREFIX/etc/bash-completion.d/git-completion.bash ]; then
-            source $PREFIX/etc/bash-completion.d/git-completion.bash
+        if [ -f $PREFIX/etc/bash_completion.d/git-completion.bash ]; then
+            source $PREFIX/etc/bash_completion.d/git-completion.bash
             __git_complete dots __git_main
         fi
         ;;
