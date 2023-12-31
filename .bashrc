@@ -68,7 +68,7 @@ esac
 case "$SYSNAME" in
     "Termux")
         if [ -f $PREFIX/share/fzf/key-bindings.bash ]; then
-            source /share/fzf/key-bindings.bash
+            source $PREFIX/share/fzf/key-bindings.bash
         fi
         if [ -f $PREFIX/share/fzf/completion.bash ]; then
             source $PREFIX/share/fzf/completion.bash
