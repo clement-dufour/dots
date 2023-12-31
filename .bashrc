@@ -51,8 +51,8 @@ alias dots="git \
 
 case "$SYSNAME" in
     "Termux")
-        if [ -f $PREFIX/usr/etc/bash-completion.d/git-completion.bash ]; then
-            source $PREFIX/usr/etc/bash-completion.d/git-completion.bash
+        if [ -f $PREFIX/etc/bash-completion.d/git-completion.bash ]; then
+            source $PREFIX/etc/bash-completion.d/git-completion.bash
             __git_complete dots __git_main
         fi
         ;;
@@ -67,11 +67,11 @@ esac
 
 case "$SYSNAME" in
     "Termux")
-        if [ -f $PREFIX/usr/share/fzf/key-bindings.bash ]; then
-            source /usr/share/fzf/key-bindings.bash
+        if [ -f $PREFIX/share/fzf/key-bindings.bash ]; then
+            source /share/fzf/key-bindings.bash
         fi
-        if [ -f $PREFIX/usr/share/fzf/completion.bash ]; then
-            source $PREFIX/usr/share/fzf/completion.bash
+        if [ -f $PREFIX/share/fzf/completion.bash ]; then
+            source $PREFIX/share/fzf/completion.bash
         fi
         ;;
     "Fedora Linux")
