@@ -12,6 +12,12 @@ fi
 export PATH
 
 # User specific aliases and functions
+if [ "$OS_TYPE" = "linux-android" ] && [ -z "$TERMUX_VERSION" ]; then
+    SYSNAME="Termux"
+else
+    SYSNAME="$(sed -En '/^NAME=/s/^NAME="(.+)"$/\1/p' /etc/*release)" || SYSNAME=""
+fi
+
 shopt -s autocd
 shopt -s cdspell
 
@@ -40,26 +46,48 @@ alias clc="fc -ln -1 | \
 
 # https://wiki.archlinux.org/title/Dotfiles#Tracking_dotfiles_directly_with_Git
 alias dots="git \
-    --git-dir=\$HOME/.local/share/dots/ \
+    --git-dir=\$HOME/.local/share/dots.git/ \
     --work-tree=\$HOME"
-if [ -f /usr/share/bash-completion/completions/git ]; then
-    source /usr/share/bash-completion/completions/git
-    __git_complete dots __git_main
-fi
+
+case "$SYSNAME" in
+    "Termux")
+        if [ -f $PREFIX/usr/etc/bash-completion.d/git-completion.bash ]; then
+            source $PREFIX/usr/etc/bash-completion.d/git-completion.bash
+            __git_complete dots __git_main
+        fi
+        ;;
+    *)
+        if [ -f /usr/share/bash-completion/completions/git ]; then
+            source /usr/share/bash-completion/completions/git
+            __git_complete dots __git_main
+        fi
+        ;;
+esac
 
 
-# Fedora
-if [ -f /usr/share/fzf/shell/key-bindings.bash ]; then
-    source /usr/share/fzf/shell/key-bindings.bash
-fi
-
-# Arch Linux
-if [ -f /usr/share/fzf/key-bindings.bash ]; then
-    source /usr/share/fzf/key-bindings.bash
-fi
-if [ -f /usr/share/fzf/completion.bash ]; then
-    source /usr/share/fzf/completion.bash
-fi
+case "$SYSNAME" in
+    "Termux")
+        if [ -f $PREFIX/usr/share/fzf/key-bindings.bash ]; then
+            source /usr/share/fzf/key-bindings.bash
+        fi
+        if [ -f $PREFIX/usr/share/fzf/completion.bash ]; then
+            source $PREFIX/usr/share/fzf/completion.bash
+        fi
+        ;;
+    "Fedora Linux")
+        if [ -f /usr/share/fzf/shell/key-bindings.bash ]; then
+            source /usr/share/fzf/shell/key-bindings.bash
+        fi
+        ;;
+    "Arch Linux")
+        if [ -f /usr/share/fzf/key-bindings.bash ]; then
+            source /usr/share/fzf/key-bindings.bash
+        fi
+        if [ -f /usr/share/fzf/completion.bash ]; then
+            source /usr/share/fzf/completion.bash
+        fi
+        ;;
+esac
 
 if [ -f /run/.containerenv ] && [ -f /run/.toolboxenv ]; then
     TOOLBOX_NAME="$(sed -En 's/^name="(.+)"/\1/p' /run/.containerenv)"
