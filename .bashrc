@@ -144,4 +144,8 @@ case "$sysname" in
         ;;
 esac
 
-PS1="${ps1_user:-}${ps1_hostname:-}${ps1_toolbox:-}${ps1_wd:-}\$(__git_ps1) \$? \$ "
+if command -v __git_ps1 &>/dev/null; then
+    PS1="${ps1_user:-}${ps1_hostname:-}${ps1_toolbox:-}${ps1_wd:-}\$(__git_ps1) \$? \$ "
+else
+    PS1="${ps1_user:-}${ps1_hostname:-}${ps1_toolbox:-}${ps1_wd:-} \$? \$ "
+fi
