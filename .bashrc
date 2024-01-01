@@ -15,7 +15,7 @@ export PATH
 if [ "$OSTYPE" = "linux-android" ] && [ -n "$TERMUX_VERSION" ]; then
     sysname="Termux"
 else
-    sysname="$(sed -En '/^NAME=/s/^NAME="(.+)"$/\1/p' /etc/*release)" 2>/dev/null || sysname=""
+    sysname="$(sed -En '/^NAME=/s/^NAME="(.+)"$/\1/p' /etc/*release)" 2>/dev/null || sysname=
 fi
 
 
