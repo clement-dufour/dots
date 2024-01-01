@@ -59,7 +59,7 @@ if alias copy &>/dev/null; then
         tr -d '\n' | \
         copy"
     alias cpwd="pwd | copy"
-    alias cfp="readlink -fn \$(fzf) | copy"
+    alias cfp="readlink -fn \"\$(fzf)\" | copy"
 fi
 
 
@@ -117,7 +117,7 @@ if [ "$(id -u)" -ne 1000 ]; then
 fi
 
 if [ -n "$SSH_CLIENT" ]; then
-    ps1_hostname="@\h "
+    ps1_hostname="@\h"
 fi
 
 if [ -f /run/.containerenv ] && [ -f /run/.toolboxenv ]; then
@@ -145,7 +145,7 @@ case "$sysname" in
 esac
 
 if command -v __git_ps1 &>/dev/null; then
-    PS1="${ps1_user:-}${ps1_hostname:-}${ps1_toolbox:-}${ps1_wd:-}\$(__git_ps1) \$? \$ "
+    PS1="${ps1_user:-}${ps1_hostname:-} ${ps1_toolbox:-}${ps1_wd:-}\$(__git_ps1) \$? \$ "
 else
-    PS1="${ps1_user:-}${ps1_hostname:-}${ps1_toolbox:-}${ps1_wd:-} \$? \$ "
+    PS1="${ps1_user:-}${ps1_hostname:-} ${ps1_toolbox:-}${ps1_wd:-} \$? \$ "
 fi
