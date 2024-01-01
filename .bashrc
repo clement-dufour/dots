@@ -53,11 +53,14 @@ case "$XDG_SESSION_TYPE" in
         ;;
 esac
 
-alias copy &>/dev/null &&
+if alias copy &>/dev/null; then
     alias clc="fc -ln -1 | \
         sed -E 's/^[[:space:]]*//;s/[[:space:]]*$//' | \
         tr -d '\n' | \
         copy"
+    alias cpwd="pwd | copy"
+    alias cfp="readlink -fn \$(fzf) | copy"
+fi
 
 
 # Dotfiles management
@@ -114,11 +117,11 @@ if [ "$(id -u)" -ne 1000 ]; then
 fi
 
 if [ -n "$SSH_CLIENT" ]; then
-    ps1_hostname="@\h"
+    ps1_hostname="@\h "
 fi
 
 if [ -f /run/.containerenv ] && [ -f /run/.toolboxenv ]; then
-    ps1_toolbox="[$(sed -En 's/^name="(.+)"/\1/p' /run/.containerenv)]"
+    ps1_toolbox="[$(sed -En 's/^name="(.+)"/\1/p' /run/.containerenv)] "
 fi
 
 if [ -z "$ps1_toolbox" ]; then
@@ -127,4 +130,18 @@ else
     ps1_wd="\[\e[01;35m\]\w\[\e[00m\]"
 fi
 
-PS1="${ps1_user:-}${ps1_hostname:-}${ps1_toolbox:-} ${ps1_wd:-} \$? \$ "
+# https://wiki.archlinux.org/title/git#Git_prompt
+case "$sysname" in
+    "Fedora Linux")
+        if [ -f /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
+            source /usr/share/git-core/contrib/completion/git-prompt.sh
+        fi
+        ;;
+    "Arch Linux")
+        if [ -f /usr/share/git/completion/git-prompt.sh ]; then
+            source /usr/share/git/completion/git-prompt.sh
+        fi
+        ;;
+esac
+
+PS1="${ps1_user:-}${ps1_hostname:-}${ps1_toolbox:-}${ps1_wd:-}\$(__git_ps1) \$? \$ "
