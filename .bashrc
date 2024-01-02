@@ -83,7 +83,7 @@ esac
 # fzf
 # https://wiki.archlinux.org/title/Fzf#Bash
 case "$releaseid" in
-    "Termux")
+    "termux")
         if [ -f "$PREFIX"/share/fzf/key-bindings.bash ]; then
             source "$PREFIX"/share/fzf/key-bindings.bash
         fi
