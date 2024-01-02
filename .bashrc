@@ -123,6 +123,10 @@ if [ -n "$SSH_CLIENT" ]; then
     ps1_hostname="@\h"
 fi
 
+if [ -n "$ps1_user" ] || [ -n "$ps1_hostname" ]; then
+    ps1_space=" "
+fi
+
 if [ -f /run/.containerenv ] && [ -f /run/.toolboxenv ]; then
     ps1_toolbox="[$(sed -En 's/^name="(.+)"/\1/p' /run/.containerenv)] "
 fi
@@ -148,7 +152,7 @@ case "$releaseid" in
 esac
 
 if command -v __git_ps1 &>/dev/null; then
-    PS1="${ps1_user:-}${ps1_hostname:-} ${ps1_toolbox:-}${ps1_wd:-}\$(__git_ps1) \$? \$ "
+    PS1="${ps1_user:-}${ps1_hostname:-}${ps1_space:-}${ps1_toolbox:-}${ps1_wd:-}\$(__git_ps1) \$? \$ "
 else
-    PS1="${ps1_user:-}${ps1_hostname:-} ${ps1_toolbox:-}${ps1_wd:-} \$? \$ "
+    PS1="${ps1_user:-}${ps1_hostname:-}${ps1_space:-}${ps1_toolbox:-}${ps1_wd:-} \$? \$ "
 fi
