@@ -13,9 +13,9 @@ export PATH
 
 # User specific aliases and functions
 if [ "$OSTYPE" = "linux-android" ] && [ -n "$TERMUX_VERSION" ]; then
-    sysname="Termux"
+    releaseid="termux"
 else
-    sysname="$(sed -En '/^NAME=/s/^NAME="(.+)"$/\1/p' /etc/*release)" 2>/dev/null || sysname=
+    releaseid="$(sed -En '/^ID=/s/^ID=//p' /etc/*release)" 2>/dev/null || releaseid=
 fi
 
 
@@ -64,7 +64,7 @@ fi
 # https://wiki.archlinux.org/title/Dotfiles#Tracking_dotfiles_directly_with_Git
 alias dots="git --git-dir=\$HOME/.local/share/dots.git/ --work-tree=\$HOME"
 
-case "$sysname" in
+case "$releaseid" in
     "Termux")
         if [ -f "$PREFIX"/etc/bash_completion.d/git-completion.bash ]; then
             source "$PREFIX"/etc/bash_completion.d/git-completion.bash
@@ -82,7 +82,7 @@ esac
 
 # fzf
 # https://wiki.archlinux.org/title/Fzf#Bash
-case "$sysname" in
+case "$releaseid" in
     "Termux")
         if [ -f "$PREFIX"/share/fzf/key-bindings.bash ]; then
             source "$PREFIX"/share/fzf/key-bindings.bash
@@ -91,12 +91,12 @@ case "$sysname" in
             source "$PREFIX"/share/fzf/completion.bash
         fi
         ;;
-    "Fedora Linux")
+    "fedora")
         if [ -f /usr/share/fzf/shell/key-bindings.bash ]; then
             source /usr/share/fzf/shell/key-bindings.bash
         fi
         ;;
-    "Arch Linux")
+    "arch")
         if [ -f /usr/share/fzf/key-bindings.bash ]; then
             source /usr/share/fzf/key-bindings.bash
         fi
@@ -104,7 +104,7 @@ case "$sysname" in
             source /usr/share/fzf/completion.bash
         fi
         ;;
-    "Debian GNU/Linux")
+    "debian")
         if [ -f /usr/share/doc/fzf/examples/key-bindings.bash ]; then
 	    source /usr/share/doc/fzf/examples/key-bindings.bash
 	fi
@@ -134,13 +134,13 @@ else
 fi
 
 # https://wiki.archlinux.org/title/git#Git_prompt
-case "$sysname" in
-    "Fedora Linux")
+case "$releaseid" in
+    "fedora")
         if [ -f /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
             source /usr/share/git-core/contrib/completion/git-prompt.sh
         fi
         ;;
-    "Arch Linux")
+    "arch")
         if [ -f /usr/share/git/completion/git-prompt.sh ]; then
             source /usr/share/git/completion/git-prompt.sh
         fi
