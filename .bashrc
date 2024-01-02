@@ -27,47 +27,42 @@ set -o noclobber
 alias sudo="sudo -v; sudo "
 alias vim="nvim"
 
-alias l="ls -1h --color=auto --file-type --group-directories-first"
-alias l.="ls -1h --color=auto --file-type --group-directories-first -d .*"
-alias ll="ls -1Ah --color=auto --file-type --group-directories-first"
-alias la="ls -lAh --color=auto --file-type --group-directories-first"
+alias l="ls -1 --color=auto --file-type --group-directories-first"
+alias l.="ls -1 --color=auto --file-type --group-directories-first -d .*"
+alias ll="ls -1A --color=auto --file-type --group-directories-first"
+alias la="ls -lA --color=auto --file-type --group-directories-first"
 alias diffc="diff --color=auto"
 alias ipa="ip -color=auto address show"
 
-alias smuc="sed -E '/^(#| |$)/d;s/^(sudo )?([^[:space:]]*).*$/\2/' \$HISTFILE | \
-    sort | \
-    uniq -c | \
-    sort -nr | \
-    head"
+alias smuc="sed -E '/^(#| |$)/d;s/^(sudo )?([^[:space:]]*).*$/\2/' \$HISTFILE | sort | uniq -c | sort -nr | head"
 
 
 case "$XDG_SESSION_TYPE" in
     "wayland")
-        command -v wl-copy &>/dev/null && alias copy="wl-copy"
+        command -v wl-copy &>/dev/null && alias clip="wl-copy"
         ;;
     "x11")
-        command -v xclip &>/dev/null && alias copy="xclip -selection clipboard"
+        command -v xclip &>/dev/null && alias clip="xclip -selection clipboard"
         ;;
     *)
-        command -v termux-clipboard-set &>/dev/null && alias copy="termux-clipboard-set"
+        if command -v termux-clipboard-set &>/dev/null; then
+            alias clip="termux-clipboard-set"
+        elif command -v clip.exe &>/dev/null; then
+            alias clip="clip.exe"
+	fi
         ;;
 esac
 
-if alias copy &>/dev/null; then
-    alias clc="fc -ln -1 | \
-        sed -E 's/^[[:space:]]*//;s/[[:space:]]*$//' | \
-        tr -d '\n' | \
-        copy"
-    alias cpwd="pwd | copy"
-    alias cfp="readlink -fn \"\$(fzf)\" | copy"
+if alias clip &>/dev/null; then
+    alias clc="fc -ln -1 | sed -E 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr -d '\n' | clip"
+    alias cpwd="pwd | clip"
+    alias cfp="readlink -fn \"\$(LC_COLLATE=C ls -1A --color=always --group-directories-first | fzf --ansi)\" | clip"
 fi
 
 
 # Dotfiles management
 # https://wiki.archlinux.org/title/Dotfiles#Tracking_dotfiles_directly_with_Git
-alias dots="git \
-    --git-dir=\$HOME/.local/share/dots.git/ \
-    --work-tree=\$HOME"
+alias dots="git --git-dir=\$HOME/.local/share/dots.git/ --work-tree=\$HOME"
 
 case "$sysname" in
     "Termux")
@@ -109,6 +104,14 @@ case "$sysname" in
             source /usr/share/fzf/completion.bash
         fi
         ;;
+    "Debian GNU/Linux")
+        if [ -f /usr/share/doc/fzf/examples/key-bindings.bash ]; then
+	    source /usr/share/doc/fzf/examples/key-bindings.bash
+	fi
+	if [ -f /usr/share/bash-completion/completions/fzf ]; then
+	    source /usr/share/bash-completion/completions/fzf
+	fi
+	;;
 esac
 
 
