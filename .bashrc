@@ -28,14 +28,18 @@ set -o noclobber
 
 
 # Aliases
+# Overrides
 alias sudo="sudo -v; sudo "
-alias vim="nvim"
+alias mv="mv -i"
+alias cp="cp -i"
+alias diff="diff --color=auto"
+command -v nvim &>/dev/null && alias vim="nvim"
 
+# Shortcuts
 alias l="ls -1 --color=auto --file-type --group-directories-first"
 alias l.="ls -1 --color=auto --file-type --group-directories-first -d .*"
 alias ll="ls -1A --color=auto --file-type --group-directories-first"
 alias la="ls -lA --color=auto --file-type --group-directories-first"
-alias diffc="diff --color=auto"
 alias ipa="ip -color=auto address show"
 
 alias smuc="sed -E '/^(#| |$)/d;s/^(sudo )?([^[:space:]]*).*$/\2/' \$HISTFILE | sort | uniq -c | sort -nr | head"
@@ -90,6 +94,17 @@ if [ -d "${XDG_DATA_HOME:-${HOME}/.local/share}/bash" ]; then
     }
     alias slc="save_snippet"
 
+    if alias clip &>/dev/null; then
+        copy_snippet() {
+            if [ -f "$snippets" ]; then
+                local snippet opts
+                opts="--tac --height ${FZF_TMUX_HEIGHT:-40%} --bind=ctrl-z:ignore ${FZF_DEFAULT_OPTS-} --scheme=history --bind=ctrl-r:toggle-sort ${FZF_CTRL_R_OPTS-} +m"
+                sed -E '/^(#| )/d' "$snippets" | FZF_DEFAULT_OPTS="$opts" fzf | tr -d '\n' | clip
+            else
+                echo "No snippet found."
+            fi
+        }
+    fi
 fi
 
 
