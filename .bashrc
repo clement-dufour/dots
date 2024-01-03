@@ -42,8 +42,6 @@ alias ll="ls -1A --color=auto --file-type --group-directories-first"
 alias la="ls -lA --color=auto --file-type --group-directories-first"
 alias ipa="ip -color=auto address show"
 
-alias smuc="sed -E '/^(#| |$)/d;s/^(sudo )?([^[:space:]]*).*$/\2/' \$HISTFILE | sort | uniq -c | sort -nr | head"
-
 
 case "$XDG_SESSION_TYPE" in
     "wayland")
@@ -57,18 +55,46 @@ case "$XDG_SESSION_TYPE" in
             alias clip="termux-clipboard-set"
         elif command -v clip.exe &>/dev/null; then
             alias clip="clip.exe"
-	fi
+        fi
         ;;
 esac
 
+
+# Functions
+# Show most used commands
+show_most_used_commands(){
+    sed -E '/^(#| |$)/d;s/^(sudo )?([^[:space:]]*).*$/\2/' "$HISTFILE" |
+        sort |
+        uniq -c |
+        sort -nr |
+        head
+}
+alias smuc="show_most_used_commands"
+
+# Copy to clipboard
 if alias clip &>/dev/null; then
-    alias clc="fc -ln -1 | sed -E 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr -d '\n' | clip"
-    alias cpwd="pwd | clip"
-    alias cfp="readlink -fn \"\$(LC_COLLATE=C ls -1A --color=always --group-directories-first | fzf --ansi)\" | clip"
+    copy_last_command() {
+        fc -ln -1 |
+            sed -E 's/^[[:space:]]*//;s/[[:space:]]*$//' |
+            tr -d '\n' |
+            clip
+    }
+    alias clc="copy_last_command"
+
+    copy_working_directory() {
+        pwd |
+            clip
+    }
+    alias cwd="copy_working_directory"
+
+    copy_file_path() {
+       readlink -fn "$(find . -maxdepth 1 | fzf)" |
+           clip
+    }
+    alias cfp="copy_file_path"
 fi
 
 
-# Functions
 # Snippets
 if [ -d "${XDG_DATA_HOME:-${HOME}/.local/share}/bash" ]; then
     snippets="${XDG_DATA_HOME:-${HOME}/.local/share}/bash/snippets.txt"
