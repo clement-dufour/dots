@@ -12,6 +12,8 @@ fi
 export PATH
 
 # User specific aliases and functions
+
+# Detect platform and distribution
 if [ "$OSTYPE" = "linux-android" ] && [ -n "$TERMUX_VERSION" ]; then
     releaseid="termux"
 else
@@ -19,11 +21,13 @@ else
 fi
 
 
+# Misc configuration
 shopt -s autocd
 shopt -s cdspell
 set -o noclobber
 
 
+# Aliases
 alias sudo="sudo -v; sudo "
 alias vim="nvim"
 
@@ -57,6 +61,35 @@ if alias clip &>/dev/null; then
     alias clc="fc -ln -1 | sed -E 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr -d '\n' | clip"
     alias cpwd="pwd | clip"
     alias cfp="readlink -fn \"\$(LC_COLLATE=C ls -1A --color=always --group-directories-first | fzf --ansi)\" | clip"
+fi
+
+
+# Functions
+# Snippets
+if [ -d "${XDG_DATA_HOME:-${HOME}/.local/share}/bash" ]; then
+    snippets="${XDG_DATA_HOME:-${HOME}/.local/share}/bash/snippets.txt"
+
+    select_snippet() {
+        if [ -f "$snippets" ]; then
+            local snippet opts
+            opts="--tac --height ${FZF_TMUX_HEIGHT:-40%} --bind=ctrl-z:ignore ${FZF_DEFAULT_OPTS-} --scheme=history --bind=ctrl-r:toggle-sort ${FZF_CTRL_R_OPTS-} +m"
+            snippet="$(sed -E '/^(#| )/d' "$snippets" | FZF_DEFAULT_OPTS="$opts" fzf --query "$READLINE_LINE")"
+            # READLINE_LINE="${READLINE_LINE:0:$READLINE_POINT}$snippet${READLINE_LINE:$READLINE_POINT}"
+            READLINE_LINE="$snippet"
+            READLINE_POINT=$(( READLINE_POINT + ${#snippet} ))
+        else
+            echo "No snippet found."
+        fi
+    }
+    bind -x '"\C-xh": select_snippet'
+
+    save_snippet() {
+        fc -ln -1 |
+            sed -E 's/^[[:space:]]*//;s/[[:space:]]*$//' |
+            tee --append "$snippets"
+    }
+    alias slc="save_snippet"
+
 fi
 
 
@@ -115,6 +148,7 @@ case "$releaseid" in
 esac
 
 
+# PS1
 if [ "$(id -u)" -ne 1000 ]; then
     ps1_user="\u"
 fi
