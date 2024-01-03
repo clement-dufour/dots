@@ -33,7 +33,10 @@ alias sudo="sudo -v; sudo "
 alias mv="mv -i"
 alias cp="cp -i"
 alias diff="diff --color=auto"
-command -v nvim &>/dev/null && alias vim="nvim"
+if command -v nvim &>/dev/null; then
+    alias vim="nvim"
+    alias vimdiff="nvim -d"
+fi
 
 # Shortcuts
 alias l="ls -1 --color=auto --file-type --group-directories-first"
@@ -83,6 +86,7 @@ if alias clip &>/dev/null; then
 
     copy_working_directory() {
         pwd |
+            tr -d '\n' |
             clip
     }
     alias cwd="copy_working_directory"
