@@ -116,7 +116,7 @@ if [ -d "${XDG_DATA_HOME:-${HOME}/.local/share}/bash" ]; then
     }
     bind -x '"\C-xs": select_snippet'
 
-    save_snippet_history() {
+    save_snippet_from_history() {
         local opts
         opts="--height ${FZF_TMUX_HEIGHT:-40%} --bind=ctrl-z:ignore ${FZF_DEFAULT_OPTS-} --scheme=history --bind=ctrl-r:toggle-sort ${FZF_CTRL_R_OPTS-} +m"
         fc -lnr -2147483648 |
