@@ -116,7 +116,7 @@ if [ -d "${XDG_DATA_HOME:-${HOME}/.local/share}/bash" ]; then
     }
     bind -x '"\C-xs": select_snippet'
 
-    save_snippet_from_history() {
+    save_history_command_as_snippet() {
         local opts
         opts="--height ${FZF_TMUX_HEIGHT:-40%} --bind=ctrl-z:ignore ${FZF_DEFAULT_OPTS-} --scheme=history --bind=ctrl-r:toggle-sort ${FZF_CTRL_R_OPTS-} +m"
         fc -lnr -2147483648 |
@@ -124,14 +124,14 @@ if [ -d "${XDG_DATA_HOME:-${HOME}/.local/share}/bash" ]; then
             FZF_DEFAULT_OPTS="$opts" fzf |
             tee --append "$snippets"
     }
-    alias shc="save_snippet_from_history"
+    alias shc="save_history_command_as_snippet"
 
-    save_snippet() {
+    save_last_command_as_snippet() {
         fc -ln -1 |
             sed -E 's/^[[:space:]]*//;s/[[:space:]]*$//' |
             tee --append "$snippets"
     }
-    alias slc="save_snippet"
+    alias slc="save_last_command_as_snippet"
 
     if alias clip &>/dev/null; then
         copy_snippet() {
