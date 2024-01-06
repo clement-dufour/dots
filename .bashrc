@@ -13,6 +13,10 @@ export PATH
 
 # User specific aliases and functions
 
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+
 # Detect platform and distribution
 if [ "$OSTYPE" = "linux-android" ] && [ -n "$TERMUX_VERSION" ]; then
     releaseid="termux"
