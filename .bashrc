@@ -156,7 +156,7 @@ fi
 alias dots="git --git-dir=\$HOME/.local/share/dots.git/ --work-tree=\$HOME"
 
 case "$releaseid" in
-    "Termux")
+    "termux")
         if [ -f "$PREFIX"/etc/bash_completion.d/git-completion.bash ]; then
             source "$PREFIX"/etc/bash_completion.d/git-completion.bash
             __git_complete dots __git_main
