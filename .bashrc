@@ -46,7 +46,7 @@ fi
 alias l="ls -1 --color=auto --file-type --group-directories-first"
 alias l.="ls -1 --color=auto --file-type --group-directories-first -d .*"
 alias ll="ls -1A --color=auto --file-type --group-directories-first"
-alias la="ls -lA --color=auto --file-type --group-directories-first"
+alias la="ls -lAh --color=auto --file-type --group-directories-first"
 alias ipa="ip -color=auto address show"
 
 
