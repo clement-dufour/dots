@@ -206,29 +206,7 @@ case "$releaseid" in
 esac
 
 
-# PS1
-if [ "$(id -u)" -ne 1000 ]; then
-    ps1_user="\u"
-fi
-
-if [ -n "$SSH_CLIENT" ]; then
-    ps1_hostname="@\h"
-fi
-
-if [ -n "$ps1_user" ] || [ -n "$ps1_hostname" ]; then
-    ps1_space=" "
-fi
-
-if [ -f /run/.containerenv ] && [ -f /run/.toolboxenv ]; then
-    ps1_toolbox="[$(sed -En 's/^name="(.+)"/\1/p' /run/.containerenv)] "
-fi
-
-if [ -z "$ps1_toolbox" ]; then
-    ps1_wd="\[\e[01;32m\]\w\[\e[00m\]"
-else
-    ps1_wd="\[\e[01;35m\]\w\[\e[00m\]"
-fi
-
+# PS1 Functions
 # https://wiki.archlinux.org/title/git#Git_prompt
 case "$releaseid" in
     "fedora")
@@ -243,8 +221,38 @@ case "$releaseid" in
         ;;
 esac
 
-if command -v __git_ps1 &>/dev/null; then
-    PS1="${ps1_user:-}${ps1_hostname:-}${ps1_space:-}${ps1_toolbox:-}${ps1_wd:-}\$(__git_ps1) \$? \$ "
-else
-    PS1="${ps1_user:-}${ps1_hostname:-}${ps1_space:-}${ps1_toolbox:-}${ps1_wd:-} \$? \$ "
+__ps1_status() {
+    exit_code="$?"
+    if [ "$exit_code" -ne 0 ]; then
+        printf "\e[0;31m$exit_code\e[00m "
+    fi
+}
+
+
+# PS1
+PS1=
+
+if [ "$(id -u)" -ne 1000 ]; then
+    PS1="${PS1}\u"
 fi
+
+if [ -n "$SSH_CLIENT" ]; then
+    PS1="${PS1}@\h"
+fi
+
+if [ -n "$PS1" ]; then
+    PS1="${PS1} "
+fi
+
+if [ -f /run/.containerenv ] && [ -f /run/.toolboxenv ]; then
+    PS1="${PS1}[$(sed -En 's/^name="(.+)"/\1/p' /run/.containerenv)] "
+    PS1="${PS1}\[\e[01;35m\]\w\[\e[00m\]"
+else
+    PS1="${PS1}\[\e[01;32m\]\w\[\e[00m\]"
+fi
+
+if command -v __git_ps1 &>/dev/null; then
+    PS1="${PS1}\$(__git_ps1)"
+fi
+
+PS1="${PS1} \$(__ps1_status)\$ "
