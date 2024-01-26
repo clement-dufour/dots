@@ -224,7 +224,7 @@ esac
 __ps1_status() {
     exit_code="$?"
     if [ "$exit_code" -ne 0 ]; then
-        printf "\e[0;31m$exit_code\e[00m "
+        printf "$exit_code "
     fi
 }
 
@@ -255,4 +255,4 @@ if command -v __git_ps1 &>/dev/null; then
     PS1="${PS1}\$(__git_ps1)"
 fi
 
-PS1="${PS1} \$(__ps1_status)\$ "
+PS1="${PS1} \[\e[0;31m\]\$(__ps1_status)\[\e[00m\]\$ "
