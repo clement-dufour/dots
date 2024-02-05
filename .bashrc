@@ -52,15 +52,22 @@ alias ipa="ip -color=auto address show"
 
 case "$XDG_SESSION_TYPE" in
     "wayland")
-        command -v wl-copy &>/dev/null && alias clip="wl-copy"
+        if command -v wl-copy &>/dev/null; then
+            alias clip="wl-copy"
+        fi
         ;;
     "x11")
-        command -v xclip &>/dev/null && alias clip="xclip -selection clipboard"
+        if command -v xclip &>/dev/null; then
+            alias clip="xclip -selection clipboard"
+        fi
         ;;
     *)
         if command -v termux-clipboard-set &>/dev/null; then
+            # Android Termux
             alias clip="termux-clipboard-set"
+
         elif command -v clip.exe &>/dev/null; then
+            # WSL
             alias clip="clip.exe"
         fi
         ;;
@@ -70,7 +77,7 @@ esac
 # Functions
 # Show most used commands
 show_most_used_commands(){
-    sed -E '/^(#| |$)/d;s/^(sudo )?([^[:space:]]*).*$/\2/' "$HISTFILE" |
+    sed -En '/^(#| |$)/!s/^(sudo )?([^[:space:]]*).*$/\2/p' "$HISTFILE" |
         sort |
         uniq -c |
         sort -nr |
@@ -82,7 +89,7 @@ alias smuc="show_most_used_commands"
 if alias clip &>/dev/null; then
     copy_last_command() {
         fc -ln -1 |
-            sed -E 's/^[[:space:]]*//;s/[[:space:]]*$//' |
+            sed -E 's/(^[[:space:]]*|[[:space:]]*$)//' |
             tr -d '\n' |
             clip
     }
@@ -124,7 +131,7 @@ if [ -d "${XDG_DATA_HOME:-${HOME}/.local/share}/bash" ]; then
         local opts
         opts="--height ${FZF_TMUX_HEIGHT:-40%} --bind=ctrl-z:ignore ${FZF_DEFAULT_OPTS-} --scheme=history --bind=ctrl-r:toggle-sort ${FZF_CTRL_R_OPTS-} +m"
         fc -lnr -2147483648 |
-            sed -E 's/^[[:space:]]*//;s/[[:space:]]*$//' |
+            sed -E 's/(^[[:space:]]*|[[:space:]]*$)//' |
             FZF_DEFAULT_OPTS="$opts" fzf |
             tee --append "$snippets"
     }
@@ -132,7 +139,7 @@ if [ -d "${XDG_DATA_HOME:-${HOME}/.local/share}/bash" ]; then
 
     save_last_command_as_snippet() {
         fc -ln -1 |
-            sed -E 's/^[[:space:]]*//;s/[[:space:]]*$//' |
+            sed -E 's/(^[[:space:]]*|[[:space:]]*$)//' |
             tee --append "$snippets"
     }
     alias slc="save_last_command_as_snippet"
@@ -142,7 +149,10 @@ if [ -d "${XDG_DATA_HOME:-${HOME}/.local/share}/bash" ]; then
             if [ -f "$snippets" ]; then
                 local snippet opts
                 opts="--tac --height ${FZF_TMUX_HEIGHT:-40%} --bind=ctrl-z:ignore ${FZF_DEFAULT_OPTS-} --scheme=history --bind=ctrl-r:toggle-sort ${FZF_CTRL_R_OPTS-} +m"
-                sed -E '/^(#| )/d' "$snippets" | FZF_DEFAULT_OPTS="$opts" fzf | tr -d '\n' | clip
+                sed -E '/^(#| )/d' "$snippets" |
+                    FZF_DEFAULT_OPTS="$opts" fzf |
+                    tr -d '\n' |
+                    clip
             else
                 echo "No snippet found."
             fi
@@ -198,11 +208,11 @@ case "$releaseid" in
     "debian")
         if [ -f /usr/share/doc/fzf/examples/key-bindings.bash ]; then
         source /usr/share/doc/fzf/examples/key-bindings.bash
-    fi
-    if [ -f /usr/share/bash-completion/completions/fzf ]; then
-        source /usr/share/bash-completion/completions/fzf
-    fi
-    ;;
+        fi
+        if [ -f /usr/share/bash-completion/completions/fzf ]; then
+            source /usr/share/bash-completion/completions/fzf
+        fi
+        ;;
 esac
 
 
