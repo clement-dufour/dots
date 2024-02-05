@@ -32,7 +32,7 @@ set -o noclobber
 
 
 # Aliases
-# Overrides
+## Override
 alias sudo="sudo -v; sudo "
 alias mv="mv -i"
 alias cp="cp -i"
@@ -42,7 +42,7 @@ if command -v nvim &>/dev/null; then
     alias vimdiff="nvim -d"
 fi
 
-# Shortcuts
+## Shorten
 alias l="ls -1 --color=auto --file-type --group-directories-first"
 alias l.="ls -1 --color=auto --file-type --group-directories-first -d .*"
 alias ll="ls -1A --color=auto --file-type --group-directories-first"
@@ -74,8 +74,22 @@ case "$XDG_SESSION_TYPE" in
 esac
 
 
+# Shortcuts
+bind '"\C-xw": "\C-awatch -n1 \C-e"'
+
+
 # Functions
-# Show most used commands
+## SSH with bashrc included
+sshpp(){
+    base64_rcfile="$(base64 -w 0 ~/.bashrc)"
+    ssh -t "$1" "exec bash --rcfile <(printf '%s\n' \"$base64_rcfile\" | base64 --decode)"
+}
+if [ -f /usr/share/bash-completion/completions/ssh ]; then
+    source /usr/share/bash-completion/completions/ssh
+    complete -F _ssh sshpp
+fi
+
+## Show most used commands
 show_most_used_commands(){
     sed -En '/^(#| |$)/!s/^(sudo )?([^[:space:]]*).*$/\2/p' "$HISTFILE" |
         sort |
@@ -85,7 +99,7 @@ show_most_used_commands(){
 }
 alias smuc="show_most_used_commands"
 
-# Copy to clipboard
+## Copy to clipboard
 if alias clip &>/dev/null; then
     copy_last_command() {
         fc -ln -1 |
@@ -109,7 +123,7 @@ if alias clip &>/dev/null; then
     alias cfp="copy_file_path"
 fi
 
-# Snippets
+## Snippets
 if [ -d "${XDG_DATA_HOME:-${HOME}/.local/share}/bash" ]; then
     snippets="${XDG_DATA_HOME:-${HOME}/.local/share}/bash/snippets.txt"
 
@@ -160,8 +174,7 @@ if [ -d "${XDG_DATA_HOME:-${HOME}/.local/share}/bash" ]; then
     fi
 fi
 
-
-# Dotfiles management
+## Dotfiles
 # https://wiki.archlinux.org/title/Dotfiles#Tracking_dotfiles_directly_with_Git
 alias dots="git --git-dir=\$HOME/.local/share/dots.git/ --work-tree=\$HOME"
 
