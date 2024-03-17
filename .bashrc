@@ -80,13 +80,15 @@ bind '"\C-xw": "\C-awatch -n1 \C-e"'
 
 # Functions
 ## SSH with bashrc included
-sshpp(){
-    base64_rcfile="$(base64 -w 0 ~/.bashrc)"
-    ssh -t "$1" "exec bash --rcfile <(printf '%s\n' \"$base64_rcfile\" | base64 --decode)"
-}
-if [ -f /usr/share/bash-completion/completions/ssh ]; then
-    source /usr/share/bash-completion/completions/ssh
-    complete -F _ssh sshpp
+if [ -z "$SSH_CLIENT" ]; then
+    sshpp(){
+        base64_rcfile="$(base64 -w 0 ~/.bashrc)"
+        ssh -t "$1" "exec bash --rcfile <(printf '%s\n' \"$base64_rcfile\" | base64 --decode)"
+    }
+    if [ -f /usr/share/bash-completion/completions/ssh ]; then
+        source /usr/share/bash-completion/completions/ssh
+        complete -F _ssh sshpp
+    fi
 fi
 
 ## Show most used commands
