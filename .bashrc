@@ -33,7 +33,8 @@ set -o noclobber
 
 # Aliases
 ## Override
-alias sudo="sudo -v; sudo "
+alias sudo="sudo "
+#alias sudo="sudo -v; sudo "
 alias mv="mv -i"
 alias cp="cp -i"
 alias diff="diff --color=auto"
@@ -48,6 +49,10 @@ alias l.="ls -1 --color=auto --file-type --group-directories-first -d .*"
 alias ll="ls -1A --color=auto --file-type --group-directories-first"
 alias la="ls -lAh --color=auto --file-type --group-directories-first"
 alias ipa="ip -color=auto address show"
+alias dcud="docker compose up -d"
+alias dcudf="docker compose up -d --force-recreate"
+alias dcd="docker compose down"
+alias dcp="docker compose pull"
 
 
 case "$XDG_SESSION_TYPE" in
@@ -79,6 +84,31 @@ bind '"\C-xw": "\C-awatch -n1 \C-e"'
 
 
 # Functions
+## Archiving and compression
+## https://wiki.archlinux.org/title/Archiving_and_compression
+## https://wiki.archlinux.org/title/Bash/Functions#Extract
+extract() {
+    if [ -f "$1" ]; then
+        case "$1" in
+            *.tar.gz)
+                tar xzvf "$1"
+                ;;
+            *.gz)
+                gzip2 -d "$1"
+                ;;
+            *.zip)
+                unzip "$1"
+                ;;
+            *)
+                printf "%s: unrecognized file extension: %s\n" "$0" "$1" >&2
+                ;;
+        esac
+    else
+        printf "%s: file not found: %s\n" "$0" "$1" >&2
+    fi
+}
+
+
 ## SSH with bashrc included
 if [ -z "$SSH_CLIENT" ]; then
     sshpp(){
