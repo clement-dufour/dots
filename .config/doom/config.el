@@ -28,22 +28,27 @@
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
 ;; refresh your font settings. If Emacs still can't find your font, it likely
 ;; wasn't installed correctly. Font issues are rarely Doom issues!
+(setq doom-font (font-spec :family "Iosevka" :size 14)
+      doom-variable-pitch-font (font-spec :family "Cantarell" :size 11 :weight 'regular))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 ;; (setq doom-theme 'doom-one)
+(after! doom-ui
+  (setq auto-dark-dark-theme 'doom-one
+        auto-dark-light-theme 'doom-tomorrow-day)
+  (auto-dark-mode 1))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 ;;(setq display-line-numbers-type t)
-;;(setq display-line-numbers-type nil)
 (setq display-line-numbers-type 'relative)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/Documents/org/")
-
+(setq org-directory "~/Documents/org/"
+      org-log-done 'time)
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
@@ -77,6 +82,22 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
+;; Frames
+(setq frame-title-format "%b - Emacs")
+
+(add-to-list 'default-frame-alist '(undecorated . t))
+(add-to-list 'default-frame-alist '(drag-internal-border . 1))
+(add-to-list 'default-frame-alist '(internal-border-width . 5))
+
+;; Dashboard
+(setq fancy-splash-image (concat doom-user-dir "emacs.svg"))
+
+(setq +doom-dashboard-functions
+      (list #'doom-dashboard-widget-banner
+            #'doom-dashboard-widget-loaded)
+      +doom-dashboard-name "Doom Emacs")
+
+;; Emacs miscellaneous configuration
 (setq visible-bell t)
 
 (setq undo-limit 400000
@@ -87,7 +108,9 @@
 ;; Implicit /g flag on evil ex substitution
 (setq evil-ex-substitute-global t)
 
-(setq +zen-text-scale 0.5)
+(setq select-enable-clipboard nil)
+
+(setq +zen-text-scale 0.8)
 
 (setq evil-vsplit-window-right t
       evil-split-window-below t)
@@ -96,17 +119,9 @@
   :after '(evil-window-split evil-window-vsplit)
   (consult-buffer))
 
+;; Keybindings
 (map! :map evil-window-map
       "SPC" #'evil-window-rotate-upwards)
-
-(setq frame-title-format "%b - Emacs")
-
-(setq fancy-splash-image (concat doom-user-dir "gnu-logo.png"))
-
-(setq +doom-dashboard-functions
-      (list #'doom-dashboard-widget-banner
-            #'doom-dashboard-widget-loaded)
-      +doom-dashboard-name "Doom Emacs")
 
 (map! :after ibuffer
       :map ibuffer-mode-map
@@ -123,7 +138,9 @@
        :desc "dired" "d" #'dired
        :desc "dired-jump" "j" #'dired-jump))
 
-(setq select-enable-clipboard nil)
+;; Package specific configuration
+(after! company
+  (setq company-show-quick-access t))
 
 (after! which-key
   (setq which-key-allow-multiple-replacements t)
@@ -143,23 +160,16 @@
   (ispell-set-spellchecker-params)
   (ispell-hunspell-add-multi-dic "en_US,fr_FR"))
 
-(after! company
-  (setq company-show-quick-access t))
-
-(add-hook! 'python-mode-hook
-  (setq prettify-symbols-alist '(("lambda" . 955))))
-
 (after! org
   (add-hook! 'org-mode-hook #'+org-pretty-mode)
   (remove-hook! 'org-mode-hook #'flyspell-mode)
   (setq org-startup-folded 'show2levels
-        org-ellipsis " [...] "
-        org-log-done 'time))
+        org-ellipsis " [...] "))
 
 (use-package! org-modern
-  :hook (org-mode . org-modern-mode))
+  :hook (org-mode . org-modern-mode)
+  :config
+  (setq org-modern-todo nil))
 
-(after! doom-ui
-  (setq auto-dark-dark-theme 'doom-one
-        auto-dark-light-theme 'doom-tomorrow-day)
-  (auto-dark-mode 1))
+(add-hook! 'python-mode-hook
+  (setq prettify-symbols-alist '(("lambda" . 955))))
