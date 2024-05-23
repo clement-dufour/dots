@@ -28,8 +28,8 @@
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
 ;; refresh your font settings. If Emacs still can't find your font, it likely
 ;; wasn't installed correctly. Font issues are rarely Doom issues!
-(setq doom-font (font-spec :family "Iosevka" :size 14)
-      doom-variable-pitch-font (font-spec :family "Cantarell" :size 11 :weight 'regular))
+(setq doom-font (font-spec :family "Iosevka" :size 16)
+      doom-variable-pitch-font (font-spec :family "Cantarell" :size 14 :weight 'regular))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -85,12 +85,48 @@
 ;; Frames
 (setq frame-title-format "%b - Emacs")
 
-(add-to-list 'default-frame-alist '(undecorated . t))
-(add-to-list 'default-frame-alist '(drag-internal-border . 1))
-(add-to-list 'default-frame-alist '(internal-border-width . 5))
+;; Despite these settings allowing resizing with the mouse, resizing to the top
+;; and to the left is not possible.
+;; (add-to-list 'default-frame-alist '(undecorated . t))
+;; (add-to-list 'default-frame-alist '(drag-internal-border . t))
+;; (add-to-list 'default-frame-alist '(internal-border-width . 5))
+
+;; If the daemon is not running, the frame is created and then centered by
+;; Mutter before this alist is read/used.
+;; (add-to-list 'default-frame-alist '(height . 50))
+;; (add-to-list 'default-frame-alist '(width . 250))
+
+(add-to-list 'default-frame-alist '(alpha-background . 95))
+
 
 ;; Dashboard
 (setq fancy-splash-image (concat doom-user-dir "emacs.svg"))
+
+;; https://discourse.doomemacs.org/t/how-to-change-your-splash-screen/57
+(defun my/doom-dashboard-draw-ascii-banner-fn ()
+  (let* ((banner
+          '("______ _____ ____ ___ ___"
+            "`  _  V  _  V  _ \\|  V  ´"
+            "| | | | | | | | | |     |"
+            "| | | | | | | | | | . . |"
+            "| |/ / \\ \\| | |/ /\\ |V| |"
+            "|   /   \\__/ \\__/  \\| | |"
+            "|  /                ' | |"
+            "| /     E M A C S     \\ |"
+            "´´                     ``"))
+         (longest-line (apply #'max (mapcar #'length banner))))
+    (put-text-property
+     (point)
+     (dolist (line banner (point))
+       (insert (+doom-dashboard--center
+                +doom-dashboard--width
+                (concat
+                 line (make-string (max 0 (- longest-line (length line)))
+                                   32)))
+               "\n"))
+     'face 'doom-dashboard-banner)))
+
+(setq +doom-dashboard-ascii-banner-fn #'my/doom-dashboard-draw-ascii-banner-fn)
 
 (setq +doom-dashboard-functions
       (list #'doom-dashboard-widget-banner
