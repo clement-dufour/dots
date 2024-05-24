@@ -98,9 +98,8 @@
 
 (add-to-list 'default-frame-alist '(alpha-background . 95))
 
-
 ;; Dashboard
-(setq fancy-splash-image (concat doom-user-dir "emacs.svg"))
+(setq fancy-splash-image (expand-file-name "emacs.svg" doom-user-dir))
 
 ;; https://discourse.doomemacs.org/t/how-to-change-your-splash-screen/57
 (defun my/doom-dashboard-draw-ascii-banner-fn ()
@@ -131,9 +130,11 @@
 (setq +doom-dashboard-functions
       (list #'doom-dashboard-widget-banner
             #'doom-dashboard-widget-loaded)
-      +doom-dashboard-name "Doom Emacs")
+      +doom-dashboard-name "Dashboard")
 
 ;; Emacs miscellaneous configuration
+(setq confirm-kill-emacs nil)
+
 (setq visible-bell t)
 
 (setq undo-limit 400000
@@ -156,6 +157,16 @@
   (consult-buffer))
 
 ;; Keybindings
+(defun my/org-tab-conditional ()
+  (interactive)
+  (if (yas-active-snippets)
+      (yas-next-field-or-maybe-expand)
+    (org-cycle)))
+
+(map! :after evil-org
+      :map evil-org-mode-map
+      :i "<tab>" #'my/org-tab-conditional)
+
 (map! :map evil-window-map
       "SPC" #'evil-window-rotate-upwards)
 
@@ -197,15 +208,88 @@
   (ispell-hunspell-add-multi-dic "en_US,fr_FR"))
 
 (after! org
-  (add-hook! 'org-mode-hook #'+org-pretty-mode)
+  (add-hook! 'org-mode-hook
+             #'+org-pretty-mode
+             #'mixed-pitch-mode)
   (remove-hook! 'org-mode-hook #'flyspell-mode)
-  (setq org-startup-folded 'show2levels
+  (setq org-startup-folded 'overview
         org-ellipsis " [...] "))
+
+(after! ox-pandoc
+  (add-to-list 'org-pandoc-options-for-docx
+               (cons 'reference-doc (expand-file-name "reference.docx" org-directory))))
 
 (use-package! org-modern
   :hook (org-mode . org-modern-mode)
   :config
-  (setq org-modern-todo nil))
+  (setq org-modern-todo nil
+        org-modern-tag nil
+        org-modern-fold-stars '(("" . ""))))
 
 (add-hook! 'python-mode-hook
   (setq prettify-symbols-alist '(("lambda" . 955))))
+
+;; Cisco mode
+(define-generic-mode
+    'cisco-mode
+  '() ;; ! must be the first character, font-lock-comment-face used instead
+  '("aaa"
+    "access-class"
+    "address"
+    "address-family"
+    "archive"
+    "cdp"
+    "channel-group"
+    "clock"
+    ;; "description"
+    "enable"
+    "errdisable"
+    "exec-timeout"
+    "exit-address-family"
+    "fhrp"
+    "hostname"
+    "interface"
+    "ip"
+    "length"
+    "line"
+    "lldp"
+    "log"
+    "logging"
+    "login"
+    "maximum"
+    ;; "name"
+    "network"
+    "ntp"
+    "passive-interface"
+    "path"
+    "priority"
+    "privilege"
+    "ptp"
+    "radius-server"
+    "redistribute"
+    "router"
+    "router-id"
+    "service"
+    ;; "shutdown"
+    "snmp-server"
+    "spanning-tree"
+    "stopbits"
+    "storm-control"
+    "switchport"
+    "time-period"
+    "transport"
+    "username"
+    "vlan"
+    "vrf"
+    "vrrp"
+    "vtp")
+  '(("^ *!.*" . font-lock-comment-face)
+    ("^ *\\(description\\|name\\).*" . font-lock-string-face)
+    ("\\([0-9]\\{1,3\\}\\.\\)\\{3\\}[0-9]\\{1,3\\}\\(/[0-9]\\{1,2\\}\\)?" . font-lock-variable-name-face) ;; ip address
+    ("[A-Za-z]+ ?[0-9]/[0-9]/[0-9]+\\(-[0-9]+\\)?" . font-lock-variable-name-face) ;; interface name
+    ("\\b[0-9]+" . font-lock-variable-name-face)
+    ("^ *shutdown" . font-lock-warning-face)
+    ("^ *no" . font-lock-negation-char-face))
+  '("\\.ios$")
+  nil
+  "Generic mode for Cisco configuration files")
