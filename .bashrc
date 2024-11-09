@@ -100,6 +100,9 @@ extract() {
             *.zip)
                 unzip "$1"
                 ;;
+            *.xz)
+                xz --decompress "$1"
+                ;;
             *)
                 printf "%s: unrecognized file extension: %s\n" "$0" "$1" >&2
                 ;;
