@@ -42,6 +42,7 @@ if command -v nvim &>/dev/null; then
     alias vim="nvim"
     alias vimdiff="nvim -d"
 fi
+alias emacs="toolbox run -c emacs /usr/bin/emacsclient -c --alternate-editor /usr/bin/emacs"
 
 ## Shorten
 alias l="ls -1 --color=auto --file-type --group-directories-first"
