@@ -89,6 +89,39 @@ bind '"\C-xw": "\C-awatch -n1 \C-e"'
 
 
 # Functions
+## Use nvim/bash configuration through SSH
+if [ -z "$SSH_CLIENT" ]; then
+    sshpp(){
+        if [ -f ~/.config/nvim/init.vim ]; then
+            # Encode vimrc content in base64
+            base64_vimrc="$(sed -E '/^ *("|$)/d' ~/.config/nvim/init.vim | base64 -w 0)"
+        else
+            base64_vimrc=""
+        fi
+        if [ -f ~/.bashrc ]; then
+            # Add encoded vimrc at the end of the bashrc content and encode the
+            # whole in base 64
+            base64_bashrc="$(cat <(sed -E '/^ *(#|$)/d' ~/.bashrc) <(printf '%s\n' "base64_vimrc=\"${base64_vimrc}\"") | base64 -w 0)"
+            # Embed the encoded bashrc file locally to the command line and
+            # decode on the remote side
+            ssh -t "$1" "exec bash --rcfile <(printf '%s\n' \"${base64_bashrc}\" | base64 --decode)"
+        else
+            printf '%s: %s\n' "${FUNCNAME}" "bashrc file not found" >&2
+        fi
+    }
+    if [ -f /usr/share/bash-completion/completions/ssh ]; then
+        source /usr/share/bash-completion/completions/ssh
+        if command -v _comp_cmd_ssh &>/dev/null; then
+            complete -F _comp_cmd_ssh sshpp
+        fi
+    fi
+else
+    if command -v nvim &>/dev/null; then
+        # Escape the $ sign here to resolve the variable on the remote side
+        alias nvim="nvim -u <(printf '%s\n' \"\${base64_vimrc}\" | base64 --decode)"
+    fi
+fi
+
 ## Archiving and compression
 ## https://wiki.archlinux.org/title/Archiving_and_compression
 ## https://wiki.archlinux.org/title/Bash/Functions#Extract
@@ -115,21 +148,6 @@ extract() {
         printf "%s: file not found: %s\n" "$0" "$1" >&2
     fi
 }
-
-
-## Use this bash configuration through SSH
-if [ -z "$SSH_CLIENT" ]; then
-    sshpp(){
-        base64_rcfile="$(base64 -w 0 ~/.bashrc)"
-        ssh -t "$1" "exec bash --rcfile <(printf '%s\n' \"$base64_rcfile\" | base64 --decode)"
-    }
-    if [ -f /usr/share/bash-completion/completions/ssh ]; then
-        source /usr/share/bash-completion/completions/ssh
-        if command -v _comp_cmd_ssh &>/dev/null; then
-            complete -F _comp_cmd_ssh sshpp
-        fi
-    fi
-fi
 
 ## Show most used commands
 show_most_used_commands(){
