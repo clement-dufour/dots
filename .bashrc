@@ -28,20 +28,28 @@ fi
 # Misc configuration
 shopt -s autocd
 shopt -s cdspell
+# Do not overwrite any file with output redirection. This may be overridden when
+# creating output files by using the redirection  operator  >|  instead of >.
 set -o noclobber
 
 
 # Aliases
 ## Override
+# Allow completion with sudo
 alias sudo="sudo "
+# Update the cached credentials before executing a command, removed due to
+# compatibility issues on machines with passwordless sudo
 #alias sudo="sudo -v; sudo "
 alias mv="mv -i"
 alias cp="cp -i"
 alias diff="diff --color=auto"
+
+# Invoke nvim instead of vim if present
 if command -v nvim &>/dev/null; then
     alias vim="nvim"
     alias vimdiff="nvim -d"
 fi
+
 alias emacs="toolbox run -c emacs /usr/bin/emacsclient -c --alternate-editor /usr/bin/emacs"
 
 ## Shorten
@@ -49,6 +57,7 @@ alias l="ls -1 --color=auto --file-type --group-directories-first"
 # alias l.="ls -1 --color=auto --file-type --group-directories-first -d .*"
 alias ll="ls -1A --color=auto --file-type --group-directories-first"
 alias la="ls -lAh --color=auto --file-type --group-directories-first"
+
 alias ipa="ip -color=auto address show"
 
 
@@ -65,7 +74,7 @@ case "$XDG_SESSION_TYPE" in
         ;;
     *)
         if command -v termux-clipboard-set &>/dev/null; then
-            # Android Termux
+            # Termux on Android
             alias clip="termux-clipboard-set"
 
         elif command -v clip.exe &>/dev/null; then
@@ -109,7 +118,7 @@ extract() {
 }
 
 
-## SSH with bashrc included
+## Use this bash configuration through SSH
 if [ -z "$SSH_CLIENT" ]; then
     sshpp(){
         base64_rcfile="$(base64 -w 0 ~/.bashrc)"
@@ -203,7 +212,7 @@ __ps1_status() {
 }
 
 
-# PS1
+# PS1 Definition
 PS1=
 
 if [ "$(id -u)" -ne 1000 ]; then
