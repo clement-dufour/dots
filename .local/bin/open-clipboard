@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+wl-paste | head -n1 | xargs -I {} flatpak run re.sonny.Junction {}
