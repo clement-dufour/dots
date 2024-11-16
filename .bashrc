@@ -11,6 +11,14 @@ if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
 fi
 export PATH
 
+
+# On Fedora, /etc/profile.d/* are run on non-login shells and overwrite the
+# PROMPT_COMMAND environnement variable.
+if ! [[ "$PROMPT_COMMAND" =~ "history -a;" ]]; then
+    PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
+fi
+export PROMPT_COMMAND
+
 # User specific aliases and functions
 
 # If not running interactively, don't do anything
