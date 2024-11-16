@@ -136,6 +136,9 @@ fi
 extract() {
     if [ -f "${1}" ]; then
         case "${1}" in
+            *.tar)
+                tar xvf "${1}"
+                ;;
             *.tar.gz)
                 tar xzvf "${1}"
                 ;;
