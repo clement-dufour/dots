@@ -46,14 +46,10 @@ alias emacs="toolbox run -c emacs /usr/bin/emacsclient -c --alternate-editor /us
 
 ## Shorten
 alias l="ls -1 --color=auto --file-type --group-directories-first"
-alias l.="ls -1 --color=auto --file-type --group-directories-first -d .*"
+# alias l.="ls -1 --color=auto --file-type --group-directories-first -d .*"
 alias ll="ls -1A --color=auto --file-type --group-directories-first"
 alias la="ls -lAh --color=auto --file-type --group-directories-first"
 alias ipa="ip -color=auto address show"
-alias dcud="docker compose up -d"
-alias dcudf="docker compose up -d --force-recreate"
-alias dcd="docker compose down"
-alias dcp="docker compose pull"
 
 
 case "$XDG_SESSION_TYPE" in
@@ -159,76 +155,6 @@ if alias clip &>/dev/null; then
     alias cfp="copy_file_path"
 fi
 
-## Snippets
-if [ -d "${XDG_DATA_HOME:-${HOME}/.local/share}/bash" ]; then
-    snippets="${XDG_DATA_HOME:-${HOME}/.local/share}/bash/snippets.txt"
-
-    select_snippet() {
-        if [ -f "$snippets" ]; then
-            local snippet opts
-            opts="--tac --height ${FZF_TMUX_HEIGHT:-40%} --bind=ctrl-z:ignore ${FZF_DEFAULT_OPTS-} --scheme=history --bind=ctrl-r:toggle-sort ${FZF_CTRL_R_OPTS-} +m"
-            snippet="$(sed -E '/^(#| )/d' "$snippets" | FZF_DEFAULT_OPTS="$opts" fzf --query "$READLINE_LINE")"
-            # READLINE_LINE="${READLINE_LINE:0:$READLINE_POINT}$snippet${READLINE_LINE:$READLINE_POINT}"
-            READLINE_LINE="$snippet"
-            READLINE_POINT=$(( READLINE_POINT + ${#snippet} ))
-        else
-            echo "No snippet found."
-        fi
-    }
-    bind -x '"\C-xs": select_snippet'
-
-    save_history_command_as_snippet() {
-        local opts
-        opts="--height ${FZF_TMUX_HEIGHT:-40%} --bind=ctrl-z:ignore ${FZF_DEFAULT_OPTS-} --scheme=history --bind=ctrl-r:toggle-sort ${FZF_CTRL_R_OPTS-} +m"
-        fc -lnr -2147483648 |
-            sed -E 's/(^[[:space:]]*|[[:space:]]*$)//' |
-            FZF_DEFAULT_OPTS="$opts" fzf |
-            tee --append "$snippets"
-    }
-    alias shc="save_history_command_as_snippet"
-
-    save_last_command_as_snippet() {
-        fc -ln -1 |
-            sed -E 's/(^[[:space:]]*|[[:space:]]*$)//' |
-            tee --append "$snippets"
-    }
-    alias slc="save_last_command_as_snippet"
-
-    if alias clip &>/dev/null; then
-        copy_snippet() {
-            if [ -f "$snippets" ]; then
-                local snippet opts
-                opts="--tac --height ${FZF_TMUX_HEIGHT:-40%} --bind=ctrl-z:ignore ${FZF_DEFAULT_OPTS-} --scheme=history --bind=ctrl-r:toggle-sort ${FZF_CTRL_R_OPTS-} +m"
-                sed -E '/^(#| )/d' "$snippets" |
-                    FZF_DEFAULT_OPTS="$opts" fzf |
-                    tr -d '\n' |
-                    clip
-            else
-                echo "No snippet found."
-            fi
-        }
-    fi
-fi
-
-## Dotfiles
-# https://wiki.archlinux.org/title/Dotfiles#Tracking_dotfiles_directly_with_Git
-alias dots="git --git-dir=\$HOME/.local/share/dots.git/ --work-tree=\$HOME"
-
-case "$releaseid" in
-    "termux")
-        if [ -f "$PREFIX"/etc/bash_completion.d/git-completion.bash ]; then
-            source "$PREFIX"/etc/bash_completion.d/git-completion.bash
-            __git_complete dots __git_main
-        fi
-        ;;
-    *)
-        if [ -f /usr/share/bash-completion/completions/git ]; then
-            source /usr/share/bash-completion/completions/git
-            __git_complete dots __git_main
-        fi
-        ;;
-esac
-
 ## Vagrant
 # https://vagrant-libvirt.github.io/vagrant-libvirt/installation.html
 vagrant() {
@@ -249,33 +175,9 @@ vagrant() {
 # fzf
 # https://wiki.archlinux.org/title/Fzf#Bash
 case "$releaseid" in
-    "termux")
-        if [ -f "$PREFIX"/share/fzf/key-bindings.bash ]; then
-            source "$PREFIX"/share/fzf/key-bindings.bash
-        fi
-        if [ -f "$PREFIX"/share/fzf/completion.bash ]; then
-            source "$PREFIX"/share/fzf/completion.bash
-        fi
-        ;;
     "fedora")
         if [ -f /usr/share/fzf/shell/key-bindings.bash ]; then
             source /usr/share/fzf/shell/key-bindings.bash
-        fi
-        ;;
-    "arch")
-        if [ -f /usr/share/fzf/key-bindings.bash ]; then
-            source /usr/share/fzf/key-bindings.bash
-        fi
-        if [ -f /usr/share/fzf/completion.bash ]; then
-            source /usr/share/fzf/completion.bash
-        fi
-        ;;
-    "debian")
-        if [ -f /usr/share/doc/fzf/examples/key-bindings.bash ]; then
-        source /usr/share/doc/fzf/examples/key-bindings.bash
-        fi
-        if [ -f /usr/share/bash-completion/completions/fzf ]; then
-            source /usr/share/bash-completion/completions/fzf
         fi
         ;;
 esac
@@ -287,11 +189,6 @@ case "$releaseid" in
     "fedora")
         if [ -f /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
             source /usr/share/git-core/contrib/completion/git-prompt.sh
-        fi
-        ;;
-    "arch")
-        if [ -f /usr/share/git/completion/git-prompt.sh ]; then
-            source /usr/share/git/completion/git-prompt.sh
         fi
         ;;
 esac
