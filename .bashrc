@@ -14,8 +14,8 @@ export PATH
 
 # On Fedora, /etc/profile.d/* are run on non-login shells and overwrite the
 # PROMPT_COMMAND environnement variable.
-if ! [[ "$PROMPT_COMMAND" =~ "history -a;" ]]; then
-    PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
+if ! [[ "${PROMPT_COMMAND}" =~ "history -a;" ]]; then
+    PROMPT_COMMAND="history -a;${PROMPT_COMMAND}"
 fi
 export PROMPT_COMMAND
 
@@ -26,7 +26,7 @@ export PROMPT_COMMAND
 
 
 # Detect platform and distribution
-if [ "$OSTYPE" = "linux-android" ] && [ -n "$TERMUX_VERSION" ]; then
+if [ "${OSTYPE}" = "linux-android" ] && [ -n "${TERMUX_VERSION}" ]; then
     releaseid="termux"
 else
     releaseid="$(sed -En '/^ID=/s/^ID=//p' /etc/*release)" 2>/dev/null || releaseid=
@@ -68,7 +68,7 @@ alias la="ls -lAh --color=auto --file-type --group-directories-first"
 alias ipa="ip -color=auto address show"
 
 
-case "$XDG_SESSION_TYPE" in
+case "${XDG_SESSION_TYPE}" in
     "wayland")
         if command -v wl-copy &>/dev/null; then
             alias clip="wl-copy"
@@ -98,7 +98,7 @@ bind '"\C-xw": "\C-awatch -n1 \C-e"'
 
 # Functions
 ## Use nvim/bash configuration through SSH
-if [ -z "$SSH_CLIENT" ]; then
+if [ -z "${SSH_CLIENT}" ]; then
     sshpp(){
         if [ -f ~/.config/nvim/init.vim ]; then
             # Encode vimrc content in base64
@@ -134,32 +134,32 @@ fi
 ## https://wiki.archlinux.org/title/Archiving_and_compression
 ## https://wiki.archlinux.org/title/Bash/Functions#Extract
 extract() {
-    if [ -f "$1" ]; then
-        case "$1" in
+    if [ -f "${1}" ]; then
+        case "${1}" in
             *.tar.gz)
-                tar xzvf "$1"
+                tar xzvf "${1}"
                 ;;
             *.gz)
-                gzip2 -d "$1"
+                gzip2 -d "${1}"
                 ;;
             *.zip)
-                unzip "$1"
+                unzip "${1}"
                 ;;
             *.xz)
-                xz --decompress "$1"
+                xz --decompress "${1}"
                 ;;
             *)
-                printf "%s: unrecognized file extension: %s\n" "$0" "$1" >&2
+                printf '%s: unrecognized file extension: %s\n' "${0}" "${1}" >&2
                 ;;
         esac
     else
-        printf "%s: file not found: %s\n" "$0" "$1" >&2
+        printf '%s: file not found: %s\n' "${0}" "${1}" >&2
     fi
 }
 
 ## Show most used commands
 show_most_used_commands(){
-    sed -En '/^(#| |$)/!s/^(sudo )?([^[:space:]]*).*$/\2/p' "$HISTFILE" |
+    sed -En '/^(#| |$)/!s/^(sudo )?([^[:space:]]*).*$/\2/p' "${HISTFILE}" |
         sort |
         uniq -c |
         sort -nr |
@@ -194,7 +194,7 @@ fi
 
 # fzf
 # https://wiki.archlinux.org/title/Fzf#Bash
-case "$releaseid" in
+case "${releaseid}" in
     "fedora")
         if [ -f /usr/share/fzf/shell/key-bindings.bash ]; then
             source /usr/share/fzf/shell/key-bindings.bash
@@ -205,7 +205,7 @@ esac
 
 # PS1 Functions
 # https://wiki.archlinux.org/title/git#Git_prompt
-case "$releaseid" in
+case "${releaseid}" in
     "fedora")
         if [ -f /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
             source /usr/share/git-core/contrib/completion/git-prompt.sh
@@ -214,9 +214,9 @@ case "$releaseid" in
 esac
 
 __ps1_status() {
-    exit_code="$?"
-    if [ "$exit_code" -ne 0 ]; then
-        printf "$exit_code "
+    exit_code="${?}"
+    if [ "${exit_code}" -ne 0 ]; then
+        printf '%s ' "${exit_code}"
     fi
 }
 
