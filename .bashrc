@@ -117,7 +117,9 @@ if [ -z "$SSH_CLIENT" ]; then
     }
     if [ -f /usr/share/bash-completion/completions/ssh ]; then
         source /usr/share/bash-completion/completions/ssh
-        complete -F _ssh sshpp
+        if command -v _comp_cmd_ssh &>/dev/null; then
+            complete -F _comp_cmd_ssh sshpp
+        fi
     fi
 fi
 
