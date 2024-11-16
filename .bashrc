@@ -35,11 +35,10 @@ set -o noclobber
 
 # Aliases
 ## Override
-# Allow completion with sudo
-alias sudo="sudo "
-# Update the cached credentials before executing a command, removed due to
-# compatibility issues on machines with passwordless sudo
-#alias sudo="sudo -v; sudo "
+# Allow completion with sudo and update the cached credentials before executing
+# a command.
+alias sudo="sudo -nv; sudo "
+
 alias mv="mv -i"
 alias cp="cp -i"
 alias diff="diff --color=auto"
