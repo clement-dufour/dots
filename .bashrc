@@ -98,11 +98,10 @@ bind '"\C-xw": "\C-awatch -n1 \C-e"'
 ## Use nvim/bash configuration through SSH
 if [ -z "${SSH_CLIENT}" ]; then
     sshpp() {
+        local base64_vimrc=""
         if [ -f ~/.config/nvim/init.vim ]; then
             # Encode vimrc content in base64
             base64_vimrc="$(sed -E '/^ *("|$)/d' ~/.config/nvim/init.vim | base64 -w 0)"
-        else
-            base64_vimrc=""
         fi
         if [ -f ~/.bashrc ]; then
             # Add encoded vimrc at the end of the bashrc content and encode the
@@ -112,7 +111,7 @@ if [ -z "${SSH_CLIENT}" ]; then
             # decode on the remote side
             ssh -t "$1" "exec bash --rcfile <(printf '%s\n' \"${base64_bashrc}\" | base64 --decode)"
         else
-            printf '%s: %s\n' "${FUNCNAME}" "bashrc file not found" >&2
+            printf '%s: %s\n' "${FUNCNAME[0]}" "bashrc file not found" >&2
         fi
     }
     if [ -f /usr/share/bash-completion/completions/ssh ]; then
