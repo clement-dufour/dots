@@ -38,19 +38,18 @@ shopt -s cdspell
 set -o noclobber
 
 # Aliases
+unalias -a
+
 ## Override
 # Allow completion with sudo and update the cached credentials before executing
 # a command.
 # alias sudo="sudo -nv; sudo "
-if command -v run0 &>/dev/null; then
-    alias sudo="run0"
-else
-    alias sudo="sudo "
-fi
+alias sudo="sudo "
 
 alias mv="mv -i"
 alias cp="cp -i"
 alias diff="diff --color=auto"
+alias ls="ls --color=auto --file-type --group-directories-first"
 
 # Invoke nvim instead of vim if present
 if command -v nvim &>/dev/null; then
@@ -61,10 +60,10 @@ fi
 alias emacs="toolbox run -c emacs /usr/bin/emacsclient -c --alternate-editor /usr/bin/emacs"
 
 ## Shorten
-alias l="ls -1 --color=auto --file-type --group-directories-first"
-# alias l.="ls -1 --color=auto --file-type --group-directories-first -d .*"
-alias ll="ls -1A --color=auto --file-type --group-directories-first"
-alias la="ls -lAh --color=auto --file-type --group-directories-first"
+alias l="ls -1"
+# alias l.="ls -1-d .*"
+alias ll="ls -1A"
+alias la="ls -lAh"
 
 alias ipa="ip -color=auto address show"
 
