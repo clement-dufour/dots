@@ -50,6 +50,7 @@ alias mv="mv -i"
 alias cp="cp -i"
 alias diff="diff --color=auto"
 alias ls="ls --color=auto --file-type --group-directories-first"
+alias lsusb="lsusb.py -ciu"
 
 # Invoke nvim instead of vim if present
 if command -v nvim &>/dev/null; then
@@ -91,7 +92,7 @@ case "${XDG_SESSION_TYPE}" in
 esac
 
 # Shortcuts
-bind '"\C-xw": "\C-awatch -n1 \C-e"'
+bind '"\C-xw": "\C-awatch -n1 -c \C-e"'
 
 # Functions
 ## Use nvim/bash configuration through SSH
