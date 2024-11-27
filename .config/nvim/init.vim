@@ -9,6 +9,7 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 
 "" set background=dark
 
+language messages en_US
 set t_Co=256
 set encoding=utf-8
 set linebreak
