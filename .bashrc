@@ -27,7 +27,8 @@ export PROMPT_COMMAND
 if [ "${OSTYPE}" = "linux-android" ] && [ -n "${TERMUX_VERSION}" ]; then
     releaseid="termux"
 else
-    releaseid="$(sed -En '/^ID=/s/^ID=//p' /etc/*release)" 2>/dev/null || releaseid=
+    releaseid="$(sed -En '/^ID=/s/^ID=//p' /etc/*release)" 2>/dev/null ||
+        releaseid=
 fi
 
 # Misc configuration
@@ -55,8 +56,8 @@ alias lsusb="lsusb.py -ciu"
 # Invoke nvim instead of vim if present
 if command -v nvim &>/dev/null; then
     if [ -n "${base64_vimrc}" ]; then
-        # On a remote host, use vimrc file
-        # Escape the $ sign here to expand the parameter on the remote side
+        # When connected to a host through sshpp, use embedded vimrc content.
+        # Escape the $ sign here to expand the parameter on call.
         alias nvim="nvim -u <(printf '%s\n' \"\${base64_vimrc}\" | base64 --decode)"
     fi
     alias vim="nvim"
@@ -104,28 +105,28 @@ bind '"\C-xw": "\C-awatch -n1 -c \C-e"'
 ## sshpp: Use nvim/bash configuration through SSH
 sshpp() {
     # On the initial host, base64_bashrc and base64_vimrc are not defined but
-    # are on a remote host
+    # are on a remote host.
     if [ -z "${base64_bashrc+x}" ] && [ -f "${HOME}/.bashrc" ]; then
-        # If base64_bashrc does not exist, define it locally
+        # If base64_bashrc does not exist, define it locally.
         local base64_bashrc
         if [ -z "${base64_vimrc+x}" ] && [ -f "${XDG_CONFIG_HOME:-${HOME}/.config}/nvim/init.vim" ]; then
-            # If base64_vimrc does not exist, define it locally
+            # If base64_vimrc does not exist, define it locally.
             local base64_vimrc
-            # Encode vimrc file content in base64
+            # Encode vimrc file content in base64.
             base64_vimrc="$(sed -E '/^ *("|$)/d' "${XDG_CONFIG_HOME:-${HOME}/.config}/nvim/init.vim" | base64 -w 0)"
             # Add encoded vimrc before the bashrc file content and encode
-            # everything in base 64
+            # everything in base 64.
             base64_bashrc="$(cat <(printf 'base64_vimrc="%s"\n' "${base64_vimrc}") <(sed -E '/^ *(#|$)/d' "${HOME}/.bashrc") | base64 -w 0)"
         else
             base64_bashrc="$(sed -E '/^ *(#|$)/d' "${HOME}/.bashrc" | base64 -w 0)"
         fi
     fi
-    # base64_bashrc should not be empty at this point but check anyway
+    # base64_bashrc should not be empty at this point but check anyway.
     if [ -n "${base64_bashrc}" ]; then
         local base64_rcfile
         base64_rcfile="$(cat <(printf 'base64_bashrc="%s"\n' "${base64_bashrc}" | base64 -w 0) <(printf '%s\n' "${base64_bashrc}"))"
         # Embed the encoded rcfile locally to the command line and decode on the
-        # remote side
+        # remote side.
         ssh -t "$1" "exec bash --rcfile <(printf '%s\n' \"${base64_rcfile}\" | base64 --decode)"
     fi
 }
