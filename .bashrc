@@ -65,6 +65,7 @@ alias l="ls -1"
 # alias l.="ls -1-d .*"
 alias ll="ls -1A"
 alias la="ls -lAh"
+alias t="tree -a"
 
 alias ipa="ip -color=auto address show"
 
