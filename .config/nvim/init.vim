@@ -9,7 +9,7 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 
 "" set background=dark
 
-language messages en_US
+language messages en_US.utf8
 set t_Co=256
 set encoding=utf-8
 set linebreak
@@ -48,7 +48,7 @@ set incsearch
 highlight MatchParen ctermbg=black ctermfg=NONE
 
 " Use SPC as Leader key
-let mapleader=' '
+let mapleader="\<Space>"
 " Quit search highlighting with Esc
 nnoremap <ESC> <CMD>nohlsearch<CR><ESC>
 " ZC closes nvim emitting an error code, useful to abort a readline command
