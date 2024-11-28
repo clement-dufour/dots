@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-set -eEuo pipefail
+set -euo pipefail
+set -E
 
 error() {
     printf "Error: \"%s\" exited with status %d.\n" "${BASH_COMMAND}" $?
@@ -11,8 +12,10 @@ usage() {
 	printf "Usage: %s [-h] [-audpc] [-i included_dirs | -e excluded_dirs] [-s source_dir] [-t target_dir]\n\n" "${0##*/}"
 }
 
-readonly uid=$(id -u)
-readonly gid=$(id -g)
+uid=$(id -u)
+gid=$(id -g)
+readonly uid
+readonly gid
 
 action_archive=false
 action_down=false
