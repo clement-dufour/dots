@@ -54,6 +54,11 @@ alias lsusb="lsusb.py -ciu"
 
 # Invoke nvim instead of vim if present
 if command -v nvim &>/dev/null; then
+    if [ -n "${base64_vimrc}" ]; then
+        # On a remote host, use vimrc file
+        # Escape the $ sign here to expand the parameter on the remote side
+        alias nvim="nvim -u <(printf '%s\n' \"\${base64_vimrc}\" | base64 --decode)"
+    fi
     alias vim="nvim"
     alias vimdiff="nvim -d"
 fi
@@ -96,35 +101,39 @@ esac
 bind '"\C-xw": "\C-awatch -n1 -c \C-e"'
 
 # Functions
-## Use nvim/bash configuration through SSH
-if [ -z "${SSH_CLIENT}" ]; then
-    sshpp() {
-        local base64_vimrc=""
-        if [ -f ~/.config/nvim/init.vim ]; then
-            # Encode vimrc content in base64
-            base64_vimrc="$(sed -E '/^ *("|$)/d' ~/.config/nvim/init.vim | base64 -w 0)"
-        fi
-        if [ -f ~/.bashrc ]; then
-            # Add encoded vimrc at the end of the bashrc content and encode the
-            # whole in base 64
-            base64_bashrc="$(cat <(sed -E '/^ *(#|$)/d' ~/.bashrc) <(printf '%s\n' "base64_vimrc=\"${base64_vimrc}\"") | base64 -w 0)"
-            # Embed the encoded bashrc file locally to the command line and
-            # decode on the remote side
-            ssh -t "$1" "exec bash --rcfile <(printf '%s\n' \"${base64_bashrc}\" | base64 --decode)"
+## sshpp: Use nvim/bash configuration through SSH
+sshpp() {
+    # On the initial host, base64_bashrc and base64_vimrc are not defined but
+    # are on a remote host
+    if [ -z "${base64_bashrc+x}" ] && [ -f "${HOME}/.bashrc" ]; then
+        # If base64_bashrc does not exist, define it locally
+        local base64_bashrc
+        if [ -z "${base64_vimrc+x}" ] && [ -f "${XDG_CONFIG_HOME:-${HOME}/.config}/nvim/init.vim" ]; then
+            # If base64_vimrc does not exist, define it locally
+            local base64_vimrc
+            # Encode vimrc file content in base64
+            base64_vimrc="$(sed -E '/^ *("|$)/d' "${XDG_CONFIG_HOME:-${HOME}/.config}/nvim/init.vim" | base64 -w 0)"
+            # Add encoded vimrc before the bashrc file content and encode
+            # everything in base 64
+            base64_bashrc="$(cat <(printf 'base64_vimrc="%s"\n' "${base64_vimrc}") <(sed -E '/^ *(#|$)/d' "${HOME}/.bashrc") | base64 -w 0)"
         else
-            printf '%s: %s\n' "${FUNCNAME[0]}" "bashrc file not found" >&2
-        fi
-    }
-    if [ -f /usr/share/bash-completion/completions/ssh ]; then
-        source /usr/share/bash-completion/completions/ssh
-        if command -v _comp_cmd_ssh &>/dev/null; then
-            complete -F _comp_cmd_ssh sshpp
+            base64_bashrc="$(sed -E '/^ *(#|$)/d' "${HOME}/.bashrc" | base64 -w 0)"
         fi
     fi
-else
-    if command -v nvim &>/dev/null; then
-        # Escape the $ sign here to resolve the variable on the remote side
-        alias nvim="nvim -u <(printf '%s\n' \"\${base64_vimrc}\" | base64 --decode)"
+    # base64_bashrc should not be empty at this point but check anyway
+    if [ -n "${base64_bashrc}" ]; then
+        local base64_rcfile
+        base64_rcfile="$(cat <(printf 'base64_bashrc="%s"\n' "${base64_bashrc}" | base64 -w 0) <(printf '%s\n' "${base64_bashrc}"))"
+        # Embed the encoded rcfile locally to the command line and decode on the
+        # remote side
+        ssh -t "$1" "exec bash --rcfile <(printf '%s\n' \"${base64_rcfile}\" | base64 --decode)"
+    fi
+}
+if [ -f /usr/share/bash-completion/completions/ssh ]; then
+    # HACK Raises an error on Debian, redirect output to /dev/null
+    source /usr/share/bash-completion/completions/ssh 2>/dev/null
+    if command -v _comp_cmd_ssh &>/dev/null; then
+        complete -F _comp_cmd_ssh sshpp
     fi
 fi
 
