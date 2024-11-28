@@ -41,7 +41,6 @@ set -o noclobber
 # Aliases
 unalias -a
 
-## Override
 # Allow completion with sudo and update the cached credentials before executing
 # a command.
 # alias sudo="sudo -nv; sudo "
@@ -66,7 +65,6 @@ fi
 
 alias emacs="toolbox run -c emacs /usr/bin/emacsclient -c --alternate-editor /usr/bin/emacs"
 
-## Shorten
 alias l="ls -1"
 # alias l.="ls -1-d .*"
 alias ll="ls -1A"
@@ -75,28 +73,9 @@ alias t="tree -a"
 
 alias ipa="ip -color=auto address show"
 
-case "${XDG_SESSION_TYPE}" in
-"wayland")
-    if command -v wl-copy &>/dev/null; then
-        alias clip="wl-copy"
-    fi
-    ;;
-"x11")
-    if command -v xclip &>/dev/null; then
-        alias clip="xclip -selection clipboard"
-    fi
-    ;;
-*)
-    if command -v termux-clipboard-set &>/dev/null; then
-        # Termux on Android
-        alias clip="termux-clipboard-set"
-
-    elif command -v clip.exe &>/dev/null; then
-        # WSL
-        alias clip="clip.exe"
-    fi
-    ;;
-esac
+if [ "${XDG_SESSION_TYPE}" = "wayland" ] && command -v wl-copy &>/dev/null;then
+    alias clip="wl-copy"
+fi
 
 # Shortcuts
 bind '"\C-xw": "\C-awatch -n1 -c \C-e"'
