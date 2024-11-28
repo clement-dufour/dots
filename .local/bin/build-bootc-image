@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+set -x
+
+# https://github.com/osbuild/bootc-image-builder?tab=readme-ov-file#-examples
+# Ensure the image is fetched
+sudo podman pull "$1"
+
+sudo podman run \
+    --rm \
+    -it \
+    --privileged \
+    --pull=newer \
+    --security-opt label=type:unconfined_t \
+    -v "$(pwd)/config.toml:/config.toml:ro" \
+    -v "$(pwd)/output:/output" \
+    -v /var/lib/containers/storage:/var/lib/containers/storage \
+    quay.io/centos-bootc/bootc-image-builder:latest \
+    --type qcow2 \
+    --local \
+    "$@"
+
+sudo podman image prune
+
+# TODO chown output folder to give back permissions to user
