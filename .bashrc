@@ -61,6 +61,18 @@ alias diff="diff --color=auto"
 alias ls="ls --color=auto --file-type --group-directories-first"
 alias lsusb="lsusb.py -ciu"
 
+alias l="ls -1"
+# alias l.="ls -1 --directory .*"
+alias ll="ls -1 --almost-all"
+alias la="ls -l --almost-all --human-readable"
+alias t="tree -a"
+
+alias ipa="ip -color=auto address show"
+
+if [ "${XDG_SESSION_TYPE}" = "wayland" ] && command -v wl-copy &>/dev/null;then
+    alias clip="wl-copy"
+fi
+
 # Invoke nvim instead of vim if present
 if command -v nvim &>/dev/null; then
     if [ -n "${base64_vimrc}" ]; then
@@ -72,25 +84,19 @@ if command -v nvim &>/dev/null; then
     alias vimdiff="nvim -d"
 fi
 
+# SSH
+# ignore UserKnownHostsFile and allow password authentification
+alias ssht="ssh -o PasswordAuthentication=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+alias sshc="ssh-copy-id -o PasswordAuthentication=yes -o StrictHostKeyChecking=accept-new"
+
+# Toolboxes apps
 alias emacs="toolbox run -c emacs /usr/bin/emacsclient -c --alternate-editor /usr/bin/emacs"
 
-alias l="ls -1"
-# alias l.="ls -1-d .*"
-alias ll="ls -1A"
-alias la="ls -lAh"
-alias t="tree -a"
-
-alias ipa="ip -color=auto address show"
-
-if [ "${XDG_SESSION_TYPE}" = "wayland" ] && command -v wl-copy &>/dev/null;then
-    alias clip="wl-copy"
-fi
-
 # Shortcuts
-bind '"\C-xw": "\C-awatch -n1 -c \C-e"'
+bind '"\C-xw": "\C-awatch -c -n1 \C-e"'
 
 # Functions
-## sshpp: Use nvim/bash configuration through SSH
+## Use nvim/bash configuration through SSH
 sshpp() {
     # On the initial host, base64_bashrc and base64_vimrc are not defined but
     # are on a remote host.
@@ -130,29 +136,33 @@ fi
 ## https://wiki.archlinux.org/title/Archiving_and_compression
 ## https://wiki.archlinux.org/title/Bash/Functions#Extract
 extract() {
-    if [ -f "${1}" ]; then
-        case "${1}" in
-        *.tar)
-            tar xvf "${1}"
-            ;;
-        *.tar.gz)
-            tar xzvf "${1}"
-            ;;
-        *.gz)
-            gzip2 -d "${1}"
-            ;;
-        *.zip)
-            unzip "${1}"
-            ;;
-        *.xz)
-            xz --decompress "${1}"
-            ;;
-        *)
-            printf '%s: unrecognized file extension: %s\n' "${0}" "${1}" >&2
-            ;;
-        esac
+    if [ -n "${1}" ]; then
+        if [ -f "${1}" ]; then
+            case "${1}" in
+            *.tar)
+                tar xvf "${1}"
+                ;;
+            *.tar.gz)
+                tar xzvf "${1}"
+                ;;
+            *.gz)
+                gzip2 -d "${1}"
+                ;;
+            *.zip)
+                unzip "${1}"
+                ;;
+            *.xz)
+                xz --decompress "${1}"
+                ;;
+            *)
+                printf '%s: unrecognized file extension: %s\n' "${FUNCNAME[0]}" "${1}" >&2
+                ;;
+            esac
+        else
+            printf '%s: file not found: %s\n' "${FUNCNAME[0]}" "${1}" >&2
+        fi
     else
-        printf '%s: file not found: %s\n' "${0}" "${1}" >&2
+        printf '%s: no file given\n' "${FUNCNAME[0]}" >&2
     fi
 }
 
@@ -190,24 +200,72 @@ if alias clip &>/dev/null; then
     alias cfp="copy_file_path"
 fi
 
+## Create a backup file (.bak)
+backup() {
+    if [[ ${#} -ne 1 ]]; then
+        printf "Usage : %s <filename>\n" "${0}"
+        return
+    fi
+    cp -- "${1}"{,.bak}
+}
+
+## Restore a backup file (.bak)
+restore() {
+    if [[ ${#} -ne 1 ]]; then
+        printf "Usage : %s <filename>\n" "${0}"
+        return
+    fi
+    cp -- "${1}"{.bak,}
+}
+
 # fzf
 # https://wiki.archlinux.org/title/Fzf#Bash
-case "${releaseid}" in
-"fedora")
-    if [ -f /usr/share/fzf/shell/key-bindings.bash ]; then
-        source /usr/share/fzf/shell/key-bindings.bash
-    fi
-    ;;
+case "$releaseid" in
+    "termux")
+        if [ -f "$PREFIX"/share/fzf/key-bindings.bash ]; then
+            source "$PREFIX"/share/fzf/key-bindings.bash
+        fi
+        if [ -f "$PREFIX"/share/fzf/completion.bash ]; then
+            source "$PREFIX"/share/fzf/completion.bash
+        fi
+        ;;
+    "fedora")
+        if [ -f /usr/share/fzf/shell/key-bindings.bash ]; then
+            source /usr/share/fzf/shell/key-bindings.bash
+        fi
+        ;;
+    "arch")
+        if [ -f /usr/share/fzf/key-bindings.bash ]; then
+            source /usr/share/fzf/key-bindings.bash
+        fi
+        if [ -f /usr/share/fzf/completion.bash ]; then
+            source /usr/share/fzf/completion.bash
+        fi
+        ;;
+    "debian")
+        if [ -f /usr/share/doc/fzf/examples/key-bindings.bash ]; then
+        source /usr/share/doc/fzf/examples/key-bindings.bash
+        fi
+        if [ -f /usr/share/bash-completion/completions/fzf ]; then
+            source /usr/share/bash-completion/completions/fzf
+        fi
+        ;;
 esac
+
 
 # PS1 Functions
 # https://wiki.archlinux.org/title/git#Git_prompt
-case "${releaseid}" in
-"fedora")
-    if [ -f /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
-        source /usr/share/git-core/contrib/completion/git-prompt.sh
-    fi
-    ;;
+case "$releaseid" in
+    "fedora")
+        if [ -f /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
+            source /usr/share/git-core/contrib/completion/git-prompt.sh
+        fi
+        ;;
+    "arch")
+        if [ -f /usr/share/git/completion/git-prompt.sh ]; then
+            source /usr/share/git/completion/git-prompt.sh
+        fi
+        ;;
 esac
 
 __ps1_status() {
