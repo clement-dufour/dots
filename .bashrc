@@ -146,7 +146,7 @@ extract() {
                 tar xzvf "${1}"
                 ;;
             *.gz)
-                gzip2 -d "${1}"
+                gzip --decompress "${1}"
                 ;;
             *.zip)
                 unzip "${1}"
@@ -162,7 +162,7 @@ extract() {
             printf '%s: file not found: %s\n' "${FUNCNAME[0]}" "${1}" >&2
         fi
     else
-        printf '%s: no file given\n' "${FUNCNAME[0]}" >&2
+        printf '%s: no filename given\n' "${FUNCNAME[0]}" >&2
     fi
 }
 
