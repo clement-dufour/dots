@@ -63,4 +63,5 @@ nnoremap <Leader>l <CMD>set list!<CR><CMD>set list?<CR>
 "  1. use sudo non-interactive mode to fail if password is prompted
 "  2. try to use run0 if sudo fails (password prompt, not installed...)
 " https://github.com/neovim/neovim/issues/1716
-cnoreabbrev w!! execute 'silent! write !sudo -n tee % \|\| run0 tee %' <BAR> edit!
+"" cnoreabbrev w!! execute 'silent! write !sudo -n tee % \|\| run0 tee %' <BAR> edit!
+cnoreabbrev w!! execute 'silent! write !sudo -n tee %' <BAR> edit!
