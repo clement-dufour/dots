@@ -18,6 +18,15 @@ if ! [[ "${PROMPT_COMMAND}" =~ "history -a;" ]]; then
 fi
 export PROMPT_COMMAND
 
+if command -v nvim &>/dev/null; then
+    EDITOR="nvim"
+elif command -v vim &>/dev/null; then
+    EDITOR="vim"
+elif command -v vi &>/dev/null; then
+    EDITOR="vi"
+fi
+export EDITOR
+
 # User specific aliases and functions
 
 # If not running interactively, don't do anything
