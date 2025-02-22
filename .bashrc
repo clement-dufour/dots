@@ -66,6 +66,7 @@ alias l="ls -1"
 alias ll="ls -1 --almost-all"
 alias la="ls -l --almost-all --human-readable"
 alias t="tree -a"
+alias dc="docker compose"
 
 alias ipa="ip -color=auto address show"
 
