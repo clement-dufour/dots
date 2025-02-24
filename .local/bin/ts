@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+set -E
+
+error() {
+    printf "Error: \"%s\" exited with status %d.\n" "${BASH_COMMAND}" $?
+}
+trap error ERR
+
+usage() {
+	printf "Usage: %s [-h] [-ud]\n\n" "${0##*/}"
+}
+
+action_down=false
+action_up=false
+
+while getopts ":hud" option; do
+	case ${option} in
+		h)
+			usage
+			exit 0
+			;;
+		u)
+			action_up=true
+			;;
+		d)
+			action_down=true
+			;;
+		\?)
+			usage
+			printf "Error: %s is not a valid option.\n" "${OPTARG}"
+			exit 1
+			;;
+		:)
+			usage
+			printf "Error: %s requires an argument.\n" "${OPTARG}"
+			exit 1
+			;;
+	esac
+done
+
+if $action_up && $action_down; then
+	usage
+	printf "Options -u and -d are mutually exclusive, use only one.\n"
+	exit 1
+fi
+
+if ! $action_up &&
+		! $action_down; then
+	usage
+	printf "Specify at least one action.\n"
+	exit 1
+fi
+
+if $action_up; then
+    set -x
+    sudo resolvectl dns eth0 8.8.8.8
+    if ! systemctl is-active tailscaled.service; then
+        sudo systemctl start tailscaled.service
+    fi
+    while ! tailscale status --json >/dev/null 2>&1; do
+        printf 'Waiting for tailscale daemon to start...\n'
+        sleep 1
+    done
+    tailscale up
+    tailscale status
+    set +x
+fi
+if $action_down; then
+    set -x
+    if tailscale status --json >/dev/null 2>&1; then
+        tailscale down
+    fi
+    if systemctl is-active tailscaled.service; then
+        sudo systemctl stop tailscaled.service
+    fi
+    sudo resolvectl revert eth0
+    set +x
+fi
