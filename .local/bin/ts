@@ -9,7 +9,7 @@ error() {
 trap error ERR
 
 usage() {
-	printf "Usage: %s [-h] [-ud]\n\n" "${0##*/}"
+    printf "Usage: %s [-h] [-ud]\n\n" "${0##*/}"
 }
 
 action_down=false
@@ -75,6 +75,6 @@ if $action_down; then
     if systemctl is-active tailscaled.service; then
         sudo systemctl stop tailscaled.service
     fi
-    sudo resolvectl revert eth0
+    sudo systemctl restart systemd-resolved.service
     set +x
 fi
