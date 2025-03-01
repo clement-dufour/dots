@@ -9,7 +9,7 @@ error() {
 trap error ERR
 
 usage() {
-	printf "Usage: %s [-h] [-audpc] [-i included_dirs | -e excluded_dirs] [-s source_dir] [-t target_dir]\n\n" "${0##*/}"
+    printf "Usage: %s [-h] [-audpc] [-i included_dirs | -e excluded_dirs] [-s source_dir] [-t target_dir]\n\n" "${0##*/}"
 }
 
 uid=$(id -u)
@@ -28,132 +28,132 @@ source_dir="$PWD"
 target_dir="$PWD"
 
 while getopts ":haudpci:e:s:t:" option; do
-	case ${option} in
-		h)
-			usage
-			exit 0
-			;;
-		a)
-			action_archive=true
-			action_down=true
-			action_up=true
-			;;
-		u)
-			action_up=true
-			;;
-		d)
-			action_down=true
-			;;
-		p)
-			action_pull=true
-			;;
-		c)
-			action_clean=true
-			;;
-		i)
-			included_dirs+=(${OPTARG})
-			;;
-		e)
-			excluded_dirs+=(${OPTARG})
-			;;
-		s)
-			source_dir="$(readlink -fn "${OPTARG}")"
-			if  ! [ -d "${source_dir}" ]; then
-				printf "Error: %s is not a valid directory.\n" "${source_dir}"
-				exit 1
-			fi
-			;;
-		t)
-			target_dir="$(readlink -fn "${OPTARG}")"
-			if ! [ -d "${target_dir}" ]; then
-				printf "Error: %s is not a valid directory.\n" "${target_dir}"
-				exit 1
-			fi
-			;;
-		\?)
-			usage
-			printf "Error: %s is not a valid option.\n" "${OPTARG}"
-			exit 1
-			;;
-		:)
-			usage
-			printf "Error: %s requires an argument.\n" "${OPTARG}"
-			exit 1
-			;;
-	esac
+    case ${option} in
+        h)
+            usage
+            exit 0
+            ;;
+        a)
+            action_archive=true
+            action_down=true
+            action_up=true
+            ;;
+        u)
+            action_up=true
+            ;;
+        d)
+            action_down=true
+            ;;
+        p)
+            action_pull=true
+            ;;
+        c)
+            action_clean=true
+            ;;
+        i)
+            included_dirs+=( "${OPTARG}" )
+            ;;
+        e)
+            excluded_dirs+=( "${OPTARG}" )
+            ;;
+        s)
+            source_dir="$(readlink -fn "${OPTARG}")"
+            if  ! [ -d "${source_dir}" ]; then
+                printf "Error: %s is not a valid directory.\n" "${source_dir}"
+                exit 1
+            fi
+            ;;
+        t)
+            target_dir="$(readlink -fn "${OPTARG}")"
+            if ! [ -d "${target_dir}" ]; then
+                printf "Error: %s is not a valid directory.\n" "${target_dir}"
+                exit 1
+            fi
+            ;;
+        \?)
+            usage
+            printf "Error: %s is not a valid option.\n" "${OPTARG}"
+            exit 1
+            ;;
+        :)
+            usage
+            printf "Error: %s requires an argument.\n" "${OPTARG}"
+            exit 1
+            ;;
+    esac
 done
 
 if (( ${#included_dirs[@]} )) && (( ${#excluded_dirs[@]} )); then
-	usage
-	printf "Options -i and -e are mutually exclusive, use only one.\n"
-	exit 1
+    usage
+    printf "Options -i and -e are mutually exclusive, use only one.\n"
+    exit 1
 fi
 
 if ! $action_archive &&
-		! $action_up &&
-		! $action_down &&
-		! $action_pull &&
-		! $action_clean; then
-	usage
-	printf "Specify at least one action.\n"
-	exit 1
+        ! $action_up &&
+        ! $action_down &&
+        ! $action_pull &&
+        ! $action_clean; then
+    usage
+    printf "Specify at least one action.\n"
+    exit 1
 fi
 
 counter=0
 printf "Managing docker compose directories...\n"
 
-for dir in ${source_dir}/*/; do
-	if [ -d "${dir}" ]; then
+for dir in "${source_dir}"/*/; do
+    if [ -d "${dir}" ]; then
 
-		compose_name="$(basename "${dir}")"
-		compose_file="${dir}/docker-compose.yml"
+        compose_name="$(basename "${dir}")"
+        compose_file="${dir}/docker-compose.yml"
 
-		if [ -f "${compose_file}" ]; then
-			if { (( ${#included_dirs[@]} )) &&
-					 ! [[ " ${included_dirs[*]} " =~ " ${compose_name} " ]]; } ||
-				   [[ " ${excluded_dirs[*]} " =~ " ${compose_name} " ]]; then
-				printf "%s: ignored\n" "${compose_name}"
-			else
-				printf "%s\n" "${compose_name}"
-				{
-					if $action_down; then
-						docker compose -f "${compose_file}" down
-						printf " - stopped and deleted container(s)\n"
-					fi
+        if [ -f "${compose_file}" ]; then
+            if { (( ${#included_dirs[@]} )) &&
+                     ! [[ " ${included_dirs[*]} " == *" ${compose_name} "* ]]; } ||
+                   [[ " ${excluded_dirs[*]} " == *" ${compose_name} "* ]]; then
+                printf "%s: ignored\n" "${compose_name}"
+            else
+                printf "%s\n" "${compose_name}"
+                {
+                    if $action_down; then
+                        docker compose -f "${compose_file}" down
+                        printf " - stopped and deleted container(s)\n"
+                    fi
 
-					if $action_archive; then
-						archive_file="${target_dir}/${compose_name}.tar"
-						sudo tar cfv "${archive_file}" -C "${source_dir}" "${compose_name}" 1>&2
-						sudo chown ${uid}:${gid} "${archive_file}"
-						printf " - archived directory\n"
-					fi
+                    if $action_archive; then
+                        archive_file="${target_dir}/${compose_name}.tar"
+                        sudo tar cfv "${archive_file}" -C "${source_dir}" "${compose_name}" 1>&2
+                        sudo chown "${uid}:${gid}" "${archive_file}"
+                        printf " - archived directory\n"
+                    fi
 
-					if $action_pull; then
-						docker compose -f "${compose_file}" pull
-						printf " - pulled image(s)\n"
-					fi
+                    if $action_pull; then
+                        docker compose -f "${compose_file}" pull
+                        printf " - pulled image(s)\n"
+                    fi
 
-					if $action_up; then
-						docker compose -f "${compose_file}" up -d --force-recreate
-						printf " - created and started container(s)\n"
-					fi
+                    if $action_up; then
+                        docker compose -f "${compose_file}" up -d --force-recreate
+                        printf " - created and started container(s)\n"
+                    fi
 
-				} 2>/dev/null
-				(( counter++ )) || true
-			fi
-		fi
-	fi
+                } 2>/dev/null
+                (( counter++ )) || true
+            fi
+        fi
+    fi
 done
 printf "\n"
 
 if $action_clean; then
-	printf "Removing unused docker data.\n"
-	docker system prune
-	printf "\n"
+    printf "Removing unused docker data.\n"
+    docker system prune
+    printf "\n"
 fi
 
-if (( $counter )); then
-	printf "Successfully managed %d directories.\n" ${counter}
+if (( counter )); then
+    printf "Successfully managed %d directories.\n" ${counter}
 else
-	printf "No docker compose directory found.\n"
+    printf "No docker compose directory found.\n"
 fi

@@ -10,13 +10,17 @@ error() {
 trap error ERR
 
 usage() {
-	printf "Usage: %s [-h] [-t]\n\n" "${0##*/}"
+    printf "Usage: %s [-h] [-t]\n\n" "${0##*/}"
 }
 
 action_update_toolboxes=false
 
 while getopts ":ht" option; do
     case ${option} in
+        h)
+            usage
+            exit 0
+            ;;
         t)
             action_update_toolboxes=true
             ;;
@@ -32,6 +36,12 @@ while getopts ":ht" option; do
             ;;
     esac
 done
+
+if ! $action_update_toolboxes; then
+    usage
+    printf "Specify at least one action.\n"
+    exit 1
+fi
 
 # update_firmwares() {
 #     printf '[  ] Updating firmwares...\n'
