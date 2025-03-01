@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+# https://github.com/travier/dotfiles/blob/16a0b3e6942b679f076ad55a1f1b70525333941d/update
+
+set -eEuo pipefail
+
+error() {
+    printf "Error: \"%s\" exited with status %d.\n" "${BASH_COMMAND}" $?
+}
+trap error ERR
+
+usage() {
+	printf "Usage: %s [-h] [-t]\n\n" "${0##*/}"
+}
+
+action_update_toolboxes=false
+
+while getopts ":ht" option; do
+    case ${option} in
+        t)
+            action_update_toolboxes=true
+            ;;
+        \?)
+            usage
+            printf "Error: %s is not a valid option.\n" "${OPTARG}"
+            exit 1
+            ;;
+        :)
+            usage
+            printf "Error: %s requires an argument.\n" "${OPTARG}"
+            exit 1
+            ;;
+    esac
+done
+
+# update_firmwares() {
+#     printf '[  ] Updating firmwares...\n'
+#     sudo fwupdmgr refresh
+#     sudo fwupdmgr update
+#     printf '[OK] Updated firmwares\n'
+# }
+
+update_toolboxes() {
+    local container
+    local image
+    local container_name
+    local container_image_digest
+    local pulled_image_digest
+    podman container list --all --filter "label=com.github.containers.toolbox" \
+        --format "{{.ID}}" | while read -r container; do
+            if podman inspect --format json "${container}" | jq -e '.[].ExecIDs == []' >/dev/null; then
+                image="$(podman inspect --format "{{.ImageName}}" "${container}")"
+                container_name="$(podman inspect --format "{{.Name}}" "${container}")"
+                container_image_digest="$(podman inspect --format "{{.Digest}}" "${image}")"
+                if [[ "${image}" != "localhost"* ]] && podman pull "${image}" >/dev/null; then
+                    pulled_image_digest="$(podman inspect --format "{{.Digest}}" "${image}")"
+                    if ! [ "${container_image_digest}" = "${pulled_image_digest}" ]; then
+                        podman stop "${container}" >/dev/null
+                        podman rm "${container}" >/dev/null
+                        toolbox create --image "${image}" "${container_name}"
+                    fi
+                fi
+            fi
+    done
+    podman images --filter "dangling=true" --format "{{.ID}}" |
+        while read -r image; do
+            podman rmi "${image}"
+    done
+}
+
+if $action_update_toolboxes; then
+    update_toolboxes
+fi
