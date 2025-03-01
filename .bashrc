@@ -91,7 +91,7 @@ alias ssht="ssh -o PasswordAuthentication=yes -o StrictHostKeyChecking=no -o Use
 alias sshc="ssh-copy-id -o PasswordAuthentication=yes -o StrictHostKeyChecking=accept-new"
 
 # Toolboxes apps
-alias emacs="toolbox run -c emacs /usr/bin/emacsclient -c --alternate-editor /usr/bin/emacs"
+alias emacs="toolbox run --container emacs-toolbox /usr/bin/emacsclient --create-frame --alternate-editor /usr/bin/emacs"
 
 # Shortcuts
 bind '"\C-xw": "\C-awatch -c -n1 \C-e"'
