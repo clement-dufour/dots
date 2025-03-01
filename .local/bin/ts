@@ -16,41 +16,41 @@ action_down=false
 action_up=false
 
 while getopts ":hud" option; do
-	case ${option} in
-		h)
-			usage
-			exit 0
-			;;
-		u)
-			action_up=true
-			;;
-		d)
-			action_down=true
-			;;
-		\?)
-			usage
-			printf "Error: %s is not a valid option.\n" "${OPTARG}"
-			exit 1
-			;;
-		:)
-			usage
-			printf "Error: %s requires an argument.\n" "${OPTARG}"
-			exit 1
-			;;
-	esac
+    case ${option} in
+        h)
+            usage
+            exit 0
+            ;;
+        u)
+            action_up=true
+            ;;
+        d)
+            action_down=true
+            ;;
+        \?)
+            usage
+            printf "Error: %s is not a valid option.\n" "${OPTARG}"
+            exit 1
+            ;;
+        :)
+            usage
+            printf "Error: %s requires an argument.\n" "${OPTARG}"
+            exit 1
+            ;;
+    esac
 done
 
 if $action_up && $action_down; then
-	usage
-	printf "Options -u and -d are mutually exclusive, use only one.\n"
-	exit 1
+    usage
+    printf "Options -u and -d are mutually exclusive, use only one.\n"
+    exit 1
 fi
 
 if ! $action_up &&
-		! $action_down; then
-	usage
-	printf "Specify at least one action.\n"
-	exit 1
+        ! $action_down; then
+    usage
+    printf "Specify at least one action.\n"
+    exit 1
 fi
 
 if $action_up; then
