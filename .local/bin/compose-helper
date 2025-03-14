@@ -118,7 +118,7 @@ for dir in "${source_dir}"/*/; do
                 {
                     if $action_down; then
                         docker compose -f "${compose_file}" down
-                        printf " - stopped and deleted container(s)\n"
+                        printf " - stopped and deleted containers\n"
                     fi
 
                     if $action_archive; then
@@ -130,12 +130,12 @@ for dir in "${source_dir}"/*/; do
 
                     if $action_pull; then
                         docker compose -f "${compose_file}" pull
-                        printf " - pulled image(s)\n"
+                        printf " - pulled images\n"
                     fi
 
                     if $action_up; then
                         docker compose -f "${compose_file}" up -d --force-recreate
-                        printf " - created and started container(s)\n"
+                        printf " - created and started containers\n"
                     fi
 
                 } 2>/dev/null
