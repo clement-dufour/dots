@@ -10,12 +10,13 @@ error() {
 trap error ERR
 
 usage() {
-    printf "Usage: %s [-h] [-t]\n\n" "${0##*/}"
+    printf "Usage: %s [-h] [-t] [-e]\n\n" "${0##*/}"
 }
 
 action_update_toolboxes=false
+action_update_emacs=false
 
-while getopts ":ht" option; do
+while getopts ":hte" option; do
     case ${option} in
         h)
             usage
@@ -23,6 +24,9 @@ while getopts ":ht" option; do
             ;;
         t)
             action_update_toolboxes=true
+            ;;
+        e)
+            action_update_emacs=true
             ;;
         \?)
             usage
@@ -37,7 +41,8 @@ while getopts ":ht" option; do
     esac
 done
 
-if ! $action_update_toolboxes; then
+if ! $action_update_toolboxes &&
+   ! $action_update_emacs; then
     usage
     printf "Specify at least one action.\n"
     exit 1
@@ -58,11 +63,13 @@ update_toolboxes() {
     local pulled_image_digest
     podman container list --all --filter "label=com.github.containers.toolbox" \
         --format "{{.ID}}" | while read -r container; do
-            if podman inspect --format json "${container}" | jq -e '.[].ExecIDs == []' >/dev/null; then
+            if podman inspect --format json "${container}" |
+                    jq -e '.[].ExecIDs == []' >/dev/null; then
                 image="$(podman inspect --format "{{.ImageName}}" "${container}")"
                 container_name="$(podman inspect --format "{{.Name}}" "${container}")"
                 container_image_digest="$(podman inspect --format "{{.Digest}}" "${image}")"
-                if [[ "${image}" != "localhost"* ]] && podman pull "${image}" >/dev/null; then
+                if [[ "${image}" != "localhost"* ]] &&
+                       podman pull "${image}" >/dev/null; then
                     pulled_image_digest="$(podman inspect --format "{{.Digest}}" "${image}")"
                     if ! [ "${container_image_digest}" = "${pulled_image_digest}" ]; then
                         podman stop "${container}" >/dev/null
@@ -78,6 +85,13 @@ update_toolboxes() {
     done
 }
 
+update_emacs() {
+    toolbox run --container emacs-toolbox "${XDG_CONFIG_HOME:-${HOME}/.config}"/emacs/bin/doom upgrade
+}
+
 if $action_update_toolboxes; then
     update_toolboxes
+fi
+if $action_update_emacs; then
+    update_emacs
 fi
