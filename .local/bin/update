@@ -10,17 +10,21 @@ error() {
 trap error ERR
 
 usage() {
-    printf "Usage: %s [-h] [-t] [-e]\n\n" "${0##*/}"
+    printf "Usage: %s [-h] [-ste]\n\n" "${0##*/}"
 }
 
+action_update_system=false
 action_update_toolboxes=false
 action_update_emacs=false
 
-while getopts ":hte" option; do
+while getopts ":hste" option; do
     case ${option} in
         h)
             usage
             exit 0
+            ;;
+        s)
+            action_update_system=true
             ;;
         t)
             action_update_toolboxes=true
@@ -41,8 +45,9 @@ while getopts ":hte" option; do
     esac
 done
 
-if ! $action_update_toolboxes &&
-   ! $action_update_emacs; then
+if ! $action_update_system &&
+        ! $action_update_toolboxes &&
+        ! $action_update_emacs; then
     usage
     printf "Specify at least one action.\n"
     exit 1
@@ -54,6 +59,10 @@ fi
 #     sudo fwupdmgr update
 #     printf '[OK] Updated firmwares\n'
 # }
+
+update_system() {
+    sudo bootc upgrade
+}
 
 update_toolboxes() {
     local container
@@ -89,6 +98,9 @@ update_emacs() {
     toolbox run --container emacs-toolbox "${XDG_CONFIG_HOME:-${HOME}/.config}"/emacs/bin/doom upgrade
 }
 
+if $action_update_system; then
+    update_system
+fi
 if $action_update_toolboxes; then
     update_toolboxes
 fi
