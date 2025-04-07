@@ -74,13 +74,16 @@ if [ "${XDG_SESSION_TYPE}" = "wayland" ] && command -v wl-copy &>/dev/null;then
     alias clip="wl-copy"
 fi
 
+# When connected to a host through sshpp, use embedded vimrc content.
+# Escape the $ sign here to expand the parameter on call.
+if [ -n "${base64_vimrc}" ]; then
+    alias vim="vim -u <(printf '%s\n' \"\${base64_vimrc}\" | base64 --decode)"
+fi
+if [ -n "${base64_vimrc}" ]; then
+    alias nvim="nvim -u <(printf '%s\n' \"\${base64_vimrc}\" | base64 --decode)"
+fi
 # Invoke nvim instead of vim if present
 if command -v nvim &>/dev/null; then
-    if [ -n "${base64_vimrc}" ]; then
-        # When connected to a host through sshpp, use embedded vimrc content.
-        # Escape the $ sign here to expand the parameter on call.
-        alias nvim="nvim -u <(printf '%s\n' \"\${base64_vimrc}\" | base64 --decode)"
-    fi
     alias vim="nvim"
     alias vimdiff="nvim -d"
 fi
@@ -99,18 +102,18 @@ bind '"\C-xw": "\C-awatch -c -n1 \C-e"'
 # Functions
 ## Use nvim/bash configuration through SSH
 sshpp() {
-    # On the initial host, base64_bashrc and base64_vimrc are not defined but
-    # are on a remote host.
+    # base64_bashrc and base64_vimrc are not defined on the initial host but are
+    # defined on a remote one.
+
+    # If true, we are on the initial host.
     if [ -z "${base64_bashrc+x}" ] && [ -f "${HOME}/.bashrc" ]; then
-        # If base64_bashrc does not exist, define it locally.
         local base64_bashrc
-        if [ -z "${base64_vimrc+x}" ] && [ -f "${XDG_CONFIG_HOME:-${HOME}/.config}/nvim/init.vim" ]; then
-            # If base64_vimrc does not exist, define it locally.
+        if [ -z "${base64_vimrc+x}" ] && [ -f "${HOME}/.vim/vimrc" ]; then
             local base64_vimrc
             # Encode vimrc file content in base64.
-            base64_vimrc="$(sed -E '/^ *("|$)/d' "${XDG_CONFIG_HOME:-${HOME}/.config}/nvim/init.vim" | base64 -w 0)"
+            base64_vimrc="$(sed -E '/^ *("|$)/d' "${HOME}/.vim/vimrc" | base64 -w 0)"
             # Add encoded vimrc before the bashrc file content and encode
-            # everything in base 64.
+            # everything in base64.
             base64_bashrc="$(cat <(printf 'base64_vimrc="%s"\n' "${base64_vimrc}") <(sed -E '/^ *(#|$)/d' "${HOME}/.bashrc") | base64 -w 0)"
         else
             base64_bashrc="$(sed -E '/^ *(#|$)/d' "${HOME}/.bashrc" | base64 -w 0)"
