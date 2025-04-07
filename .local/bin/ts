@@ -76,8 +76,9 @@ if $action_up; then
         sleep 1
     done
     tailscale up
-    tailscale status
     set +x
+    # shellcheck source=/dev/null
+    source <(tailscale completion bash)
 fi
 if $action_down; then
     set -x

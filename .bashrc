@@ -219,12 +219,6 @@ restore() {
     cp -- "${1}"{.bak,}
 }
 
-# Tailscale bash completion
-if command -v tailscale &>/dev/null; then
-    # shellcheck source=/dev/null
-    source <(tailscale completion bash)
-fi
-
 # fzf
 # https://wiki.archlinux.org/title/Fzf#Bash
 case "$releaseid" in
