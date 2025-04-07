@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+regex='s/^[0-9]+: block id ([A-Za-z0-9:]+) serial "[^"]+" name " *([^"]+)".*$/\1 \2/'
+device="$(usbguard list-devices --blocked | sed -E -e "${regex}" | sed -E -e 's/ $//' | fzf --reverse | cut -d ' ' -f1)"
+usbguard allow-device "${device}"
