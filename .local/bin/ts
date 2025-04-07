@@ -12,13 +12,25 @@ usage() {
     printf "Usage: %s [-h] [-ud]\n\n" "${0##*/}"
 }
 
+status() {
+    if systemctl is-active tailscaled.service >/dev/null 2>&1; then
+        tailscale status
+    else
+        printf 'tailscaled.service not active, ts -u to start.\n'
+    fi
+}
+
 action_down=false
 action_up=false
 
-while getopts ":hud" option; do
+while getopts ":hsud" option; do
     case ${option} in
         h)
             usage
+            exit 0
+            ;;
+        s)
+            status
             exit 0
             ;;
         u)
