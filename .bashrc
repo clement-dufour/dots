@@ -44,16 +44,17 @@ fi
 shopt -s autocd
 shopt -s cdspell
 # Do not overwrite any file with output redirection. This may be overridden when
-# creating output files by using the redirection  operator  >|  instead of >.
+# creating output files by using the redirection operator >| instead of >.
 set -o noclobber
 
 # Aliases
 unalias -a
 
-# Allow completion with sudo and update the cached credentials before executing
-# a command.
-# alias sudo="sudo -nv; sudo "
+# Allow bash completion with sudo
 alias sudo="sudo "
+# Update the cached credentials before executing a command.
+# Removed because it required the password for NOPASSWD users.
+# alias sudo="sudo -nv; sudo "
 
 alias mv="mv -i"
 alias cp="cp -i"
@@ -66,16 +67,15 @@ alias l="LC_COLLATE='C' ls -1"
 alias ll="LC_COLLATE='C' ls -1 --almost-all"
 alias la="LC_COLLATE='C' ls -l --almost-all --human-readable"
 alias t="tree -a"
-alias dc="docker compose"
 
 alias ipa="ip -color=auto address show"
+alias dc="docker compose"
 
 if [ "${XDG_SESSION_TYPE}" = "wayland" ] && command -v wl-copy &>/dev/null;then
     alias clip="wl-copy"
 fi
 
 # When connected to a host through sshpp, use embedded vimrc content.
-# Escape the $ sign here to expand the parameter on call.
 if [ -n "${base64_vimrc}" ]; then
     alias vim="vim -u <(printf '%s\n' \"\${base64_vimrc}\" | base64 --decode)"
 fi
@@ -88,12 +88,10 @@ if command -v nvim &>/dev/null; then
     alias vimdiff="nvim -d"
 fi
 
-# SSH
-# ignore UserKnownHostsFile and allow password authentification
+# Ignore UserKnownHostsFile and allow password authentification
 alias ssht="ssh -o PasswordAuthentication=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 alias sshc="ssh-copy-id -o PasswordAuthentication=yes -o StrictHostKeyChecking=accept-new"
 
-# Toolbox
 alias emacs="toolbox run --container emacs-toolbox emacsclient --create-frame --alternate-editor /usr/bin/emacs"
 alias stow="toolbox run --container fedora-toolbox stow --verbose --restow --dir=\"\${HOME}/Projects/dots/\" --target=\"\${HOME}/\" ."
 
@@ -101,7 +99,7 @@ alias stow="toolbox run --container fedora-toolbox stow --verbose --restow --dir
 bind '"\C-xw": "\C-awatch -c -n1 \C-e"'
 
 # Functions
-## Use nvim/bash configuration through SSH
+## Use vim/bash configuration through SSH
 sshpp() {
     # base64_bashrc and base64_vimrc are not defined on the initial host but are
     # defined on a remote one.
@@ -160,7 +158,8 @@ extract() {
                 xz --decompress "${1}"
                 ;;
             *)
-                printf '%s: unrecognized file extension: %s\n' "${FUNCNAME[0]}" "${1}" >&2
+                printf '%s: unrecognized file extension: %s\n' \
+                    "${FUNCNAME[0]}" "${1}" >&2
                 ;;
             esac
         else
