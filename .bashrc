@@ -167,16 +167,6 @@ extract() {
     fi
 }
 
-## Show most used commands
-show_most_used_commands() {
-    sed -En '/^(#| |$)/!s/^(sudo )?([^[:space:]]*).*$/\2/p' "${HISTFILE}" |
-        sort |
-        uniq -c |
-        sort -nr |
-        head
-}
-alias smuc="show_most_used_commands"
-
 ## Copy to clipboard
 if alias clip &>/dev/null; then
     copy_last_command() {
@@ -186,13 +176,6 @@ if alias clip &>/dev/null; then
             clip
     }
     alias clc="copy_last_command"
-
-    copy_working_directory() {
-        pwd |
-            tr -d '\n' |
-            clip
-    }
-    alias cwd="copy_working_directory"
 
     copy_file_path() {
         readlink -fn "$(find . -maxdepth 1 | fzf)" |
