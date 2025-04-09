@@ -93,8 +93,9 @@ fi
 alias ssht="ssh -o PasswordAuthentication=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 alias sshc="ssh-copy-id -o PasswordAuthentication=yes -o StrictHostKeyChecking=accept-new"
 
-# Toolboxes apps
-alias emacs="toolbox run --container emacs-toolbox /usr/bin/emacsclient --create-frame --alternate-editor /usr/bin/emacs"
+# Toolbox
+alias emacs="toolbox run --container emacs-toolbox emacsclient --create-frame --alternate-editor /usr/bin/emacs"
+alias stow="toolbox run --container fedora-toolbox stow --verbose --restow --dir=\"\${HOME}/Projects/dots/\" --target=\"\${HOME}/\" ."
 
 # Shortcuts
 bind '"\C-xw": "\C-awatch -c -n1 \C-e"'
