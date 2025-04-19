@@ -88,9 +88,8 @@ if command -v nvim &>/dev/null; then
     alias vimdiff="nvim -d"
 fi
 
-# Ignore UserKnownHostsFile and allow password authentification
-alias ssht="ssh -o PasswordAuthentication=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
-alias sshc="ssh-copy-id -o PasswordAuthentication=yes -o StrictHostKeyChecking=accept-new"
+alias ssh-new="ssh -P new"
+alias ssh-copy-id="ssh-copy-id -P new"
 
 alias emacs="toolbox run --container emacs-toolbox emacsclient --create-frame --alternate-editor /usr/bin/emacs"
 alias stow="toolbox run --container fedora-toolbox stow --verbose --restow --dir=\"\${HOME}/Projects/dots/\" --target=\"\${HOME}/\" ."
