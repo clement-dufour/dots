@@ -2,7 +2,8 @@
 
 # https://github.com/travier/dotfiles/blob/16a0b3e6942b679f076ad55a1f1b70525333941d/update
 
-set -eEuo pipefail
+set -euo pipefail
+set -E
 
 error() {
     printf "Error: \"%s\" exited with status %d.\n" "${BASH_COMMAND}" $?
