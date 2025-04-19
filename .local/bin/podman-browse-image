@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+set -E
+
+error() {
+    printf "Error: \"%s\" exited with status %d.\n" "${BASH_COMMAND}" $?
+}
+trap error ERR
+
+usage() {
+    printf "Usage: %s IMAGE\n\n" "${0##*/}"
+}
+
+while getopts ":h" option; do
+    case ${option} in
+        h)
+            usage
+            exit 0
+            ;;
+        \?)
+            usage
+            printf "Error: %s is not a valid option.\n" "${OPTARG}"
+            exit 1
+            ;;
+        :)
+            usage
+            printf "Error: %s requires an argument.\n" "${OPTARG}"
+            exit 1
+            ;;
+    esac
+done
+
+image="${1}"
+
+if podman image exists "${image}"; then
+    podman unshare bash -c "cd \"\$(podman image mount ${image})\" && exec bash"
+else
+    exit 1
+fi
