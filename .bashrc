@@ -91,8 +91,16 @@ fi
 alias ssh-new="ssh -P new"
 alias ssh-copy-id="ssh-copy-id -P new"
 
-alias emacs="toolbox run --container emacs-toolbox emacsclient --create-frame --alternate-editor /usr/bin/emacs"
-alias stow="toolbox run --container fedora-toolbox stow --verbose --restow --dir=\"\${HOME}/Projects/dots/\" --target=\"\${HOME}/\" ."
+if command -v emacs &>/dev/null; then
+    alias emacs="emacsclient --create-frame --alternate-editor /usr/bin/emacs"
+else
+    alias emacs="toolbox run --container emacs-toolbox emacsclient --create-frame --alternate-editor /usr/bin/emacs"
+fi
+if command -v stow &>/dev/null; then
+    alias stow="stow --verbose --restow --dir=\"\${HOME}/Projects/dots/\" --target=\"\${HOME}/\" ."
+else
+    alias stow="toolbox run --container fedora-toolbox stow --verbose --restow --dir=\"\${HOME}/Projects/dots/\" --target=\"\${HOME}/\" ."
+fi
 
 # Shortcuts
 bind '"\C-xw": "\C-awatch -c -n1 \C-e"'
