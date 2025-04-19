@@ -92,9 +92,9 @@ alias ssh-new="ssh -P new"
 alias ssh-copy-id="ssh-copy-id -P new"
 
 if command -v emacs &>/dev/null; then
-    alias emacs="emacsclient --create-frame --alternate-editor /usr/bin/emacs"
+    alias emacs="emacsclient --create-frame --alternate-editor \emacs"
 else
-    alias emacs="toolbox run --container emacs-toolbox emacsclient --create-frame --alternate-editor /usr/bin/emacs"
+    alias emacs="toolbox run --container emacs-toolbox emacsclient --create-frame --alternate-editor \emacs"
 fi
 if command -v stow &>/dev/null; then
     alias stow="stow --verbose --restow --dir=\"\${HOME}/Projects/dots/\" --target=\"\${HOME}/\" ."
