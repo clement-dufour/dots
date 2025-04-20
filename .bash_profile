@@ -7,9 +7,12 @@ if [ -f ~/.bashrc ]; then
 fi
 
 # User specific environment and startup programs
-export HISTTIMEFORMAT="%F %T "
+export HISTCONTROL=ignoreboth
+export HISTFILE="${XDG_DATA_HOME:-${HOME}/.local/share}/bash/history"
 export HISTFILESIZE=10000
 export HISTSIZE=10000
-export HISTCONTROL=ignoreboth
+export HISTTIMEFORMAT="%F %T "
 
 export PROMPT_DIRTRIM=2
+
+export PYTHON_HISTORY="${XDG_DATA_HOME:-${HOME}/.local/share}/python/history"
