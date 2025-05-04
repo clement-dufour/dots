@@ -81,11 +81,13 @@ fi
 
 # When connected to a host through sshpp, use embedded vimrc content.
 if [ -n "${base64_vimrc}" ]; then
-    alias vim="vim -u <(printf '%s\n' \"\${base64_vimrc}\" | base64 --decode)"
+    if command -v nvim &>/dev/null; then
+        alias nvim="nvim -u <(printf '%s\n' \"\${base64_vimrc}\" | base64 --decode)"
+    else
+        alias vim="vim -u <(printf '%s\n' \"\${base64_vimrc}\" | base64 --decode)"
+    fi
 fi
-if [ -n "${base64_vimrc}" ]; then
-    alias nvim="nvim -u <(printf '%s\n' \"\${base64_vimrc}\" | base64 --decode)"
-fi
+
 # Invoke nvim instead of vim if present
 if command -v nvim &>/dev/null; then
     alias vim="nvim"
