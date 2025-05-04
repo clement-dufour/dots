@@ -61,6 +61,7 @@ alias cp="cp -i"
 alias diff="diff --color=auto"
 alias grep="grep --color=auto"
 alias ls="ls --color=auto --file-type --group-directories-first"
+alias ip="ip -color=auto"
 alias lsusb="lsusb.py -ciu"
 
 alias l="LC_COLLATE='C' ls -1"
@@ -69,7 +70,7 @@ alias ll="LC_COLLATE='C' ls -1 --almost-all"
 alias la="LC_COLLATE='C' ls -l --almost-all --human-readable"
 alias t="tree -a"
 
-alias ipa="ip -color=auto address show"
+# alias ipa="ip address show"
 alias dc="docker compose"
 
 if [ "${XDG_SESSION_TYPE}" = "wayland" ] && command -v wl-copy &>/dev/null;then
