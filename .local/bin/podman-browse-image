@@ -31,10 +31,16 @@ while getopts ":h" option; do
     esac
 done
 
+if [ "$#" -eq 0 ]; then
+    usage
+    exit 1
+fi
+
 image="${1}"
 
 if podman image exists "${image}"; then
     podman unshare bash -c "cd \"\$(podman image mount ${image})\" && exec bash"
 else
+    usage
     exit 1
 fi
