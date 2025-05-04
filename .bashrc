@@ -156,7 +156,7 @@ extract() {
             *.tar)
                 tar xvf "${1}"
                 ;;
-            *.tar.gz)
+            *.tar.gz | *.tgz)
                 tar xzvf "${1}"
                 ;;
             *.gz)
