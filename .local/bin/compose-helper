@@ -51,10 +51,10 @@ while getopts ":haudpci:e:s:t:" option; do
             action_clean=true
             ;;
         i)
-            included_dirs+=( "${OPTARG}" )
+            included_dirs+=( "${OPTARG%/}" )
             ;;
         e)
-            excluded_dirs+=( "${OPTARG}" )
+            excluded_dirs+=( "${OPTARG%/}" )
             ;;
         s)
             source_dir="$(readlink -fn "${OPTARG}")"
