@@ -11,18 +11,23 @@ error() {
 trap error ERR
 
 usage() {
-    printf "Usage: %s [-h] [-ste]\n\n" "${0##*/}"
+    printf "Usage: %s [-h] [-aste]\n\n" "${0##*/}"
 }
 
 action_update_system=false
 action_update_toolboxes=false
 action_update_emacs=false
 
-while getopts ":hste" option; do
+while getopts ":haste" option; do
     case ${option} in
         h)
             usage
             exit 0
+            ;;
+        a)
+            action_update_system=true
+            action_update_toolboxes=true
+            action_update_emacs=true
             ;;
         s)
             action_update_system=true
@@ -62,7 +67,7 @@ fi
 # }
 
 update_system() {
-    sudo bootc upgrade
+    rpm-ostree upgrade
 }
 
 update_toolboxes() {
@@ -96,7 +101,7 @@ update_toolboxes() {
 }
 
 update_emacs() {
-    toolbox run --container emacs-toolbox "${XDG_CONFIG_HOME:-${HOME}/.config}"/emacs/bin/doom upgrade
+    toolbox run --container emacs-toolbox "${XDG_CONFIG_HOME:-${HOME}/.config}"/emacs/bin/doom upgrade --force
 }
 
 if $action_update_system; then
