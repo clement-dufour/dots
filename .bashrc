@@ -154,11 +154,8 @@ extract() {
     if [ -n "${1}" ]; then
         if [ -f "${1}" ]; then
             case "${1}" in
-            *.tar)
-                tar xvf "${1}"
-                ;;
-            *.tar.gz | *.tgz)
-                tar xzvf "${1}"
+            *.tar | *.tar.gz | *.tgz | *.tar.xz | *.txz)
+                tar --extract --file "${1}"
                 ;;
             *.gz)
                 gzip --decompress "${1}"
