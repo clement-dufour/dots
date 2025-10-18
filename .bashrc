@@ -94,7 +94,6 @@ if command -v nvim &>/dev/null; then
     alias vimdiff="nvim -d"
 fi
 
-alias ssh-new="ssh -P new"
 alias ssh-copy-id="ssh-copy-id -P new"
 
 if command -v emacs &>/dev/null; then
