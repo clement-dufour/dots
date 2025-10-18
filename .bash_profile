@@ -20,3 +20,5 @@ export PROMPT_DIRTRIM=2
 if [ -f "${XDG_DATA_HOME:-${HOME}/.local/share}/python/history" ]; then
     export PYTHON_HISTORY="${XDG_DATA_HOME:-${HOME}/.local/share}/python/history"
 fi
+
+export GOPATH="${XDG_CACHE_HOME:-${HOME}/.cache}/go"
