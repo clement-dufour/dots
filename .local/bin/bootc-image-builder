@@ -3,9 +3,27 @@
 set -euo pipefail
 set -x
 
+if ! [ -d ./output ]; then
+    mkdir output
+fi
+
 # https://github.com/osbuild/bootc-image-builder?tab=readme-ov-file#-examples
 # Ensure the image is fetched
 sudo podman pull "${!#}"
+
+# sudo podman run \
+#     --rm \
+#     -it \
+#     --privileged \
+#     --pull=newer \
+#     --security-opt label=type:unconfined_t \
+#     -v ./config.toml:/config.toml:ro \
+#     -v ./output:/output \
+#     -v /var/lib/containers/storage:/var/lib/containers/storage \
+#     quay.io/centos-bootc/bootc-image-builder:latest \
+#     --chown "$(id -u):$(id -g)" \
+#     --use-librepo=true \
+#     "$@"
 
 sudo podman run \
     --rm \
@@ -13,7 +31,6 @@ sudo podman run \
     --privileged \
     --pull=newer \
     --security-opt label=type:unconfined_t \
-    -v ./config.toml:/config.toml:ro \
     -v ./output:/output \
     -v /var/lib/containers/storage:/var/lib/containers/storage \
     quay.io/centos-bootc/bootc-image-builder:latest \
