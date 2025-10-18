@@ -11,14 +11,16 @@ error() {
 trap error ERR
 
 usage() {
-    printf "Usage: %s [-h] [-aste]\n\n" "${0##*/}"
+    printf "Usage: %s [-h] [-aste] [-r]\n\n" "${0##*/}"
 }
 
 action_update_system=false
 action_update_toolboxes=false
 action_update_emacs=false
+action_reboot=false
+action_poweroff=false
 
-while getopts ":haste" option; do
+while getopts ":hasterp" option; do
     case ${option} in
         h)
             usage
@@ -38,6 +40,12 @@ while getopts ":haste" option; do
         e)
             action_update_emacs=true
             ;;
+        r)
+            action_reboot=true
+            ;;
+        p)
+            action_poweroff=true
+            ;;
         \?)
             usage
             printf "Error: %s is not a valid option.\n" "${OPTARG}"
@@ -50,6 +58,12 @@ while getopts ":haste" option; do
             ;;
     esac
 done
+
+if $action_reboot && $action_poweroff; then
+    usage
+    printf "Options -r and -p are mutually exclusive, use only one.\n"
+    exit 1
+fi
 
 if ! $action_update_system &&
         ! $action_update_toolboxes &&
@@ -112,4 +126,10 @@ if $action_update_toolboxes; then
 fi
 if $action_update_emacs; then
     update_emacs
+fi
+if $action_reboot; then
+    systemctl reboot
+fi
+if $action_poweroff; then
+    systemctl poweroff
 fi
