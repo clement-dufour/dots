@@ -9,6 +9,9 @@ fi
 if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
     PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 fi
+if ! [[ "$PATH" =~ "$HOME/.pyenv/bin:" ]]; then
+    PATH="$HOME/.pyenv/bin:$PATH"
+fi
 export PATH
 
 # On Fedora, /etc/profile.d/* are run on non-login shells and overwrite the
