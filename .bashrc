@@ -66,6 +66,7 @@ alias grep="grep --color=auto"
 alias ls="ls --color=auto --file-type --group-directories-first"
 alias ip="ip -color=auto"
 alias lsusb="lsusb.py -ciu"
+alias trash="gio trash"
 
 alias l="LC_COLLATE='C' ls -1"
 # alias l.="LC_COLLATE='C' ls -1 --directory .*"
