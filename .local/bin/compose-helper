@@ -117,24 +117,33 @@ for dir in "${source_dir}"/*/; do
                 printf "%s\n" "${compose_name}"
                 {
                     if $action_down; then
-                        docker compose -f "${compose_file}" down
+                        docker compose --file "${compose_file}" down
                         printf " - stopped and deleted containers\n"
                     fi
 
                     if $action_archive; then
-                        archive_file="${target_dir}/${compose_name}.tar"
-                        sudo tar cfv "${archive_file}" -C "${source_dir}" "${compose_name}" 1>&2
-                        sudo chown "${uid}:${gid}" "${archive_file}"
-                        printf " - archived directory\n"
+                        (
+                            archive_file="${target_dir}/${compose_name}.tar.gz"
+                            sudo tar --create --verbose --auto-compress \
+                                --file "${archive_file}" \
+                                "${source_dir}/${compose_name}" 1>&2
+                            sudo chown "${uid}:${gid}" "${archive_file}"
+                            printf " - archived directory\n"
+                        ) &
                     fi
 
                     if $action_pull; then
-                        docker compose -f "${compose_file}" pull
-                        printf " - pulled images\n"
+                        (
+                            docker compose --file "${compose_file}" pull
+                            printf " - pulled images\n"
+                        ) &
                     fi
 
+                    wait
+
                     if $action_up; then
-                        docker compose -f "${compose_file}" up -d --force-recreate
+                        docker compose --file "${compose_file}" up --detach \
+                            --force-recreate
                         printf " - created and started containers\n"
                     fi
 
