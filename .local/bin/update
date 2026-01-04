@@ -11,7 +11,7 @@ error() {
 trap error ERR
 
 usage() {
-    printf "Usage: %s [-h] [-aste] [-r]\n\n" "${0##*/}"
+    printf "Usage: %s [-h] [-aste] [-r | -p]\n\n" "${0##*/}"
 }
 
 action_update_system=false
