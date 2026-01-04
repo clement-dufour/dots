@@ -36,7 +36,7 @@ while getopts ":haudpci:e:s:t:" option; do
         a)
             action_archive=true
             action_down=true
-            action_up=true
+            # action_up=true
             ;;
         u)
             action_up=true
