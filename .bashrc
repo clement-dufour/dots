@@ -319,4 +319,4 @@ if command -v __git_ps1 &>/dev/null; then
     PS1="${PS1}\$(__git_ps1)"
 fi
 
-PS1="${PS1} \[\e[0;31m\]\$(__ps1_status)\[\e[00m\]\$ "
+PS1="${PS1} \[\e[0;31m\]\$(__ps1_status)\[\e[00m\]\\$ "
