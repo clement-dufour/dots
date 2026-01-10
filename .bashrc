@@ -220,37 +220,16 @@ restore() {
 
 # fzf
 # https://wiki.archlinux.org/title/Fzf#Bash
-case "$releaseid" in
-    "termux")
-        if [ -f "$PREFIX"/share/fzf/key-bindings.bash ]; then
-            source "$PREFIX"/share/fzf/key-bindings.bash
-        fi
-        if [ -f "$PREFIX"/share/fzf/completion.bash ]; then
-            source "$PREFIX"/share/fzf/completion.bash
-        fi
-        ;;
-    "fedora")
-        if [ -f /usr/share/fzf/shell/key-bindings.bash ]; then
-            source /usr/share/fzf/shell/key-bindings.bash
-        fi
-        ;;
-    "arch")
-        if [ -f /usr/share/fzf/key-bindings.bash ]; then
-            source /usr/share/fzf/key-bindings.bash
-        fi
-        if [ -f /usr/share/fzf/completion.bash ]; then
-            source /usr/share/fzf/completion.bash
-        fi
-        ;;
-    "debian")
-        if [ -f /usr/share/doc/fzf/examples/key-bindings.bash ]; then
-            source /usr/share/doc/fzf/examples/key-bindings.bash
-        fi
-        if [ -f /usr/share/bash-completion/completions/fzf ]; then
-            source /usr/share/bash-completion/completions/fzf
-        fi
-        ;;
-esac
+if __fzf_bash="$(fzf --bash 2>/dev/null)"; then
+    eval "${__fzf_bash}"
+else
+    if [ -f /usr/share/doc/fzf/examples/key-bindings.bash ]; then
+        source /usr/share/doc/fzf/examples/key-bindings.bash
+    fi
+    if [ -f /usr/share/bash-completion/completions/fzf ]; then
+        source /usr/share/bash-completion/completions/fzf
+    fi
+fi
 
 # bash_completion
 # shellcheck shell=sh disable=SC1091,SC2166,SC2268,SC3028,SC3044,SC3054
