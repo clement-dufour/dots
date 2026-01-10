@@ -44,14 +44,6 @@ export EDITOR
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-# Detect platform and distribution
-if [ "${OSTYPE}" = "linux-android" ] && [ -n "${TERMUX_VERSION}" ]; then
-    releaseid="termux"
-else
-    releaseid="$(sed -En '/^ID=/s/^ID=//p' /etc/*release)" 2>/dev/null ||
-        releaseid=
-fi
-
 # Misc configuration
 shopt -s autocd
 shopt -s cdspell
@@ -231,13 +223,8 @@ restore() {
 # https://wiki.archlinux.org/title/Fzf#Bash
 if __fzf_bash="$(fzf --bash 2>/dev/null)"; then
     eval "${__fzf_bash}"
-else
-    if [ -f /usr/share/doc/fzf/examples/key-bindings.bash ]; then
-        source /usr/share/doc/fzf/examples/key-bindings.bash
-    fi
-    if [ -f /usr/share/bash-completion/completions/fzf ]; then
-        source /usr/share/bash-completion/completions/fzf
-    fi
+elif [ -f /usr/share/doc/fzf/examples/key-bindings.bash ]; then
+    source /usr/share/doc/fzf/examples/key-bindings.bash
 fi
 
 # bash_completion
@@ -261,18 +248,11 @@ fi
 
 # PS1 Functions
 # https://wiki.archlinux.org/title/git#Git_prompt
-case "$releaseid" in
-    "fedora")
-        if [ -f /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
-            source /usr/share/git-core/contrib/completion/git-prompt.sh
-        fi
-        ;;
-    "arch")
-        if [ -f /usr/share/git/completion/git-prompt.sh ]; then
-            source /usr/share/git/completion/git-prompt.sh
-        fi
-        ;;
-esac
+if [ -f /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
+    source /usr/share/git-core/contrib/completion/git-prompt.sh
+elif [ -f /usr/share/git/completion/git-prompt.sh ]; then
+    source /usr/share/git/completion/git-prompt.sh
+fi
 
 __ps1_status() {
     exit_code="${?}"
