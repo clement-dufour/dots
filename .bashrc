@@ -6,18 +6,27 @@ if [ -f /etc/bashrc ]; then
 fi
 
 # User specific environment
-if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
-    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+# shellcheck shell=sh disable=SC2076
+if ! [[ "${PATH}" =~ "${HOME}/.local/bin:" ]]; then
+    PATH="${HOME}/.local/bin:${PATH}"
 fi
-if ! [[ "$PATH" =~ "$HOME/.pyenv/bin:" ]]; then
-    PATH="$HOME/.pyenv/bin:$PATH"
+# shellcheck shell=sh disable=SC2076
+if ! [[ "${PATH}" =~ "${HOME}/.pyenv/bin:" ]]; then
+    PATH="${HOME}/.pyenv/bin:${PATH}"
 fi
 export PATH
 
 # On Fedora, /etc/profile.d/* are run on non-login shells and overwrite the
 # PROMPT_COMMAND environnement variable.
-if ! [[ "${PROMPT_COMMAND}" =~ "history -a;" ]]; then
-    PROMPT_COMMAND="history -a;${PROMPT_COMMAND}"
+if [[ "$(declare -p PROMPT_COMMAND 2>&1)" =~ "declare -a" ]]; then
+    if ! [[ " ${PROMPT_COMMAND[*]} " =~ " history -a " ]]; then
+        PROMPT_COMMAND+=("history -a")
+    fi
+else
+    # shellcheck shell=sh disable=SC2128,SC2178
+    if ! [[ "${PROMPT_COMMAND}" =~ "history -a;" ]]; then
+        PROMPT_COMMAND="history -a;${PROMPT_COMMAND}"
+    fi
 fi
 export PROMPT_COMMAND
 
