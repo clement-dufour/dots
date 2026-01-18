@@ -10,10 +10,6 @@ fi
 if ! [[ "${PATH}" =~ "${HOME}/.local/bin:" ]]; then
     PATH="${HOME}/.local/bin:${PATH}"
 fi
-# shellcheck shell=sh disable=SC2076
-if ! [[ "${PATH}" =~ "${HOME}/.pyenv/bin:" ]]; then
-    PATH="${HOME}/.pyenv/bin:${PATH}"
-fi
 export PATH
 
 # On Fedora, /etc/profile.d/* are run on non-login shells and overwrite the
