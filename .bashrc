@@ -62,7 +62,9 @@ alias diff="diff --color=auto"
 alias grep="grep --color=auto"
 alias ls="LC_COLLATE='C' ls --color=auto --file-type --group-directories-first"
 alias ip="ip -color=auto"
-alias lsusb="lsusb.py -ciu"
+if command -v lsusb.py &>/dev/null; then
+    alias lsusb="lsusb.py -ciu"
+fi
 alias trash="gio trash"
 
 alias l="ls -1"
