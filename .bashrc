@@ -104,6 +104,7 @@ if command -v emacs &>/dev/null; then
     alias emacs="emacsclient --create-frame --alternate-editor \emacs"
 else
     alias emacs="toolbox run --container emacs-toolbox emacsclient --create-frame --alternate-editor \emacs"
+    alias doom="toolbox run --container emacs-toolbox \"\${XDG_CONFIG_HOME:-\${HOME}/.config}\"/emacs/bin/doom"
 fi
 if command -v stow &>/dev/null; then
     alias stow="stow --verbose --restow --dir=\"\${HOME}/Projects/dots/\" --target=\"\${HOME}/\" ."
