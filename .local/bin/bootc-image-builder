@@ -17,4 +17,8 @@ sudo podman run \
     --volume ./disk.raw:/disk.raw \
     --pid=host \
     "${container_image}" \
-    bootc install to-disk --via-loopback '/disk.raw' --generic-image "${@}"
+    bootc install to-disk \
+    --enforce-container-sigpolicy \
+    --generic-image \
+    --via-loopback '/disk.raw' \
+    "${@}"
