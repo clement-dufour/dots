@@ -11,16 +11,17 @@ error() {
 trap error ERR
 
 usage() {
-    printf "Usage: %s [-h] [-aste] [-r | -p]\n\n" "${0##*/}"
+    printf "Usage: %s [-h] [-asfte] [-r | -p]\n\n" "${0##*/}"
 }
 
 action_update_system=false
-action_update_toolboxes=false
+action_update_flatpak=false
+action_update_toolbox=false
 action_update_emacs=false
 action_reboot=false
 action_poweroff=false
 
-while getopts ":hasterp" option; do
+while getopts ":hasfterp" option; do
     case ${option} in
         h)
             usage
@@ -28,14 +29,17 @@ while getopts ":hasterp" option; do
             ;;
         a)
             action_update_system=true
-            action_update_toolboxes=true
+            action_update_toolbox=true
             action_update_emacs=true
             ;;
         s)
             action_update_system=true
             ;;
+        f)
+            action_update_flatpak=true
+            ;;
         t)
-            action_update_toolboxes=true
+            action_update_toolbox=true
             ;;
         e)
             action_update_emacs=true
@@ -66,7 +70,8 @@ if $action_reboot && $action_poweroff; then
 fi
 
 if ! $action_update_system &&
-        ! $action_update_toolboxes &&
+        ! $action_update_flatpak &&
+        ! $action_update_toolbox &&
         ! $action_update_emacs; then
     usage
     printf "Specify at least one action.\n"
@@ -74,14 +79,16 @@ if ! $action_update_system &&
 fi
 
 # update_firmwares() {
-#     printf '[  ] Updating firmwares...\n'
 #     sudo fwupdmgr refresh
 #     sudo fwupdmgr update
-#     printf '[OK] Updated firmwares\n'
 # }
 
 update_system() {
     rpm-ostree upgrade
+}
+
+update_flatpak() {
+    flatpak upgrade
 }
 
 update_toolboxes() {
@@ -121,7 +128,10 @@ update_emacs() {
 if $action_update_system; then
     update_system
 fi
-if $action_update_toolboxes; then
+if $action_update_flatpak; then
+    update_flatpak
+fi
+if $action_update_toolbox; then
     update_toolboxes
 fi
 if $action_update_emacs; then
