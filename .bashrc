@@ -58,6 +58,8 @@ alias sudo="sudo "
 
 alias mv="mv -i"
 alias cp="cp -i"
+alias rm="rm -I"
+alias mkdir="mkdir -p"
 alias diff="diff --color=auto"
 alias grep="grep --color=auto"
 alias ls="LC_COLLATE='C' ls --color=auto --file-type --group-directories-first"
@@ -65,7 +67,6 @@ alias ip="ip -color=auto"
 if command -v lsusb.py &>/dev/null; then
     alias lsusb="lsusb.py -ciu"
 fi
-alias trash="gio trash"
 
 alias l="ls -1"
 # alias l.="ls -1 --directory .*"
@@ -78,6 +79,7 @@ alias t="tree -a"
 alias ip6="ip -6"
 alias dc="docker compose"
 alias nohistory="unset HISTFILE"
+alias trash="gio trash"
 
 if [ "${XDG_SESSION_TYPE}" = "wayland" ] && command -v wl-copy &>/dev/null; then
     alias clip="wl-copy"
