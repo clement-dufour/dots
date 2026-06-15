@@ -98,8 +98,6 @@ if command -v nvim &>/dev/null; then
     alias vimdiff="nvim -d"
 fi
 
-alias ssh-copy-id="ssh-copy-id -P new"
-
 if command -v emacs &>/dev/null; then
     alias emacs="emacsclient --create-frame --alternate-editor \emacs"
 else
