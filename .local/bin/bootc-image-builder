@@ -11,11 +11,11 @@ truncate disk.raw --size 4G
 sudo podman run \
     --rm \
     -it \
-    --privileged \
     --pull=newer \
+    --privileged \
     --security-opt label=type:unconfined_t \
-    --volume ./disk.raw:/disk.raw \
     --pid=host \
+    --volume ./disk.raw:/disk.raw \
     "${container_image}" \
     bootc install to-disk \
     --enforce-container-sigpolicy \

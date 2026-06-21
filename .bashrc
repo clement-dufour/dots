@@ -50,11 +50,9 @@ set -o noclobber
 # Aliases
 unalias -a
 
-# Allow bash completion with sudo
-alias sudo="sudo "
 # Update the cached credentials before executing a command.
 # Removed because it required the password for NOPASSWD users.
-# alias sudo="sudo -nv; sudo "
+# alias sudo="sudo -nv; sudo"
 
 alias mv="mv -i"
 alias cp="cp -i"
@@ -73,7 +71,7 @@ alias l="ls -1"
 alias ll="ls -1 --almost-all"
 alias la="ls -l --all --human-readable"
 alias lA="ls -l --almost-all --human-readable"
-alias t="tree -a"
+alias lr="ls -R"
 
 # alias ipa="ip address show"
 alias ip6="ip -6"
