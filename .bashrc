@@ -100,9 +100,9 @@ if command -v nvim &>/dev/null; then
 fi
 
 if command -v emacs &>/dev/null; then
-    alias emacs="emacsclient --create-frame --alternate-editor \emacs"
+    alias emacs="emacsclient --create-frame --alternate-editor ''"
 else
-    alias emacs="toolbox run --container emacs-toolbox emacsclient --create-frame --alternate-editor \emacs"
+    alias emacs="toolbox run --container emacs-toolbox emacsclient --create-frame --alternate-editor ''"
     alias doom="toolbox run --container emacs-toolbox \"\${XDG_CONFIG_HOME:-\${HOME}/.config}\"/emacs/bin/doom"
 fi
 if command -v stow &>/dev/null; then
