@@ -115,6 +115,9 @@ fi
 bind '"\C-xw": "\C-awatch -c -n1 \C-e"'
 
 # Functions
+## https://stackoverflow.com/a/16178979
+color()(set -o pipefail;"$@" 2>&1>&3|sed $'s,.*,\e[31m&\e[m,'>&2)3>&1
+
 ## Use vim/bash configuration through SSH
 sshpp() {
     # base64_bashrc and base64_vimrc are not defined on the initial host but are
