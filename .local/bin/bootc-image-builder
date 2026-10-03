@@ -10,11 +10,12 @@ truncate disk.raw --size 4G
 
 sudo podman run \
     --rm \
-    -it \
     --pull=newer \
     --privileged \
-    --security-opt label=type:unconfined_t \
     --pid=host \
+    --ipc=host \
+    --security-opt label=type:unconfined_t \
+    --volume /var/lib/containers:/var/lib/containers \
     --volume ./disk.raw:/disk.raw \
     "${container_image}" \
     bootc install to-disk \
