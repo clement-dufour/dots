@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-# https://github.com/travier/dotfiles/blob/16a0b3e6942b679f076ad55a1f1b70525333941d/update
-
-set -euo pipefail
+set -e -o nounset -o pipefail
 set -E
 
 error() {
