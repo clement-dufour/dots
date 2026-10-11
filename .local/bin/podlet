@@ -5,4 +5,4 @@ set -e -o nounset -o pipefail
 container_image="ghcr.io/containers/podlet:latest"
 
 # --interactive make stdin available to the contained process
-podman run --interactive "${container_image}" "${@}"
+podman run --rm --interactive "${container_image}" "${@}"
