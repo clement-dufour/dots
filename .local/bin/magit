@@ -4,12 +4,12 @@ set -e -o nounset -o pipefail
 
 emacs_toolbox="emacs-toolbox"
 
-if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+if ! git rev-parse --is-inside-work-tree &>/dev/null; then
     printf "Error: %s is not in a git repository.\n" "${PWD}"
     exit 1
 fi
 
-if command -v emacs &>/dev/null; then
+if command -v emacs &>/dev/null && command -v emacsclient &>/dev/null; then
     emacsclient --create-frame --alternate-editor '' -e "(magit-status)"
 else
     toolbox run --container ${emacs_toolbox} \
