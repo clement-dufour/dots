@@ -79,6 +79,7 @@ alias dc="docker compose"
 alias nohistory="unset HISTFILE"
 alias trash="gio trash"
 alias contents="grep -Ev '^\s*(#|$)'"
+alias naut="xdg-open ."
 
 if [ "${XDG_SESSION_TYPE}" = "wayland" ] && command -v wl-copy &>/dev/null; then
     alias clip="wl-copy"
